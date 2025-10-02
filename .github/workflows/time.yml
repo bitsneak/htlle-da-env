@@ -2,7 +2,7 @@
 name: Git Time Calculator
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   calculate-time:
