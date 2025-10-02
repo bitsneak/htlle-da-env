@@ -365,7 +365,7 @@ if export_file is not None:
     with open(file_path, "w", encoding="utf-8") as f:
         json.dump(generate_json_output(), f, indent=2)
 
-    print(f"Exported report to {file_path}")
+    print(f"Report exported to {file_path}")
 else:
     # Stdout output format
     if show_users:
