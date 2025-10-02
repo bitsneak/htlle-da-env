@@ -18,28 +18,28 @@ jobs:
         fetch-depth: 0
 
     - name: Get UTC Date
-      id: date
-      run: echo "date=$(date -u +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+      id: datetime
+      run: echo "datetime=$(date -u +'%Y-%m-%dT%H-%MZ')" >> $GITHUB_OUTPUT
 
     - name: Set Up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
 
-    - name: Calculate User Time
-      run: python $TIME_CALCULATOR_PATH -u -a -e > user-time-report-${{ steps.date.outputs.date }}.json
+    - name: Generate User Report
+      run: python $TIME_CALCULATOR_PATH -u -a -e > user-report-${{ steps.datetime.outputs.datetime }}.json
         
-    - name: Calculate Issue Time
-      run: python $TIME_CALCULATOR_PATH -i -a -e > issue-time-report-${{ steps.date.outputs.date }}.json
+    - name: Generate Issue Report
+      run: python $TIME_CALCULATOR_PATH -i -a -e > issue-report-${{ steps.datetime.outputs.datetime }}.json
 
-    - name: Upload User Time
+    - name: Upload User Report
       uses: actions/upload-artifact@v4
       with:
-        name: user-time-report-${{ steps.date.outputs.date }}
-        path: user-time-report-${{ steps.date.outputs.date }}.json
+        name: user-report-${{ steps.datetime.outputs.datetime }}
+        path: user-report-${{ steps.datetime.outputs.datetime }}.json
 
-    - name: Upload Issue Time
+    - name: Upload Issue Report
       uses: actions/upload-artifact@v4
       with:
-        name: issue-time-report-${{ steps.date.outputs.date }}
-        path: issue-time-report-${{ steps.date.outputs.date }}.json
+        name: issue-report-${{ steps.datetime.outputs.datetime }}
+        path: issue-report-${{ steps.datetime.outputs.datetime }}.json
