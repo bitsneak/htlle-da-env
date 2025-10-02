@@ -37,7 +37,8 @@ The script supports different flags to search and filter where `-u` and `-i` are
 | `-f` | Specify date from which should be counted. |
 | `-t` | Specify date up to which to should be counted. |
 | `-b` | Specify branch which to analyze. |
-| `-e` | Export results as JSON. |
+| `-e` | Export results as JSON to stdout. |
+| `-ef` | Export result as JSON to file. If no filename is provided, an automatic timestamped filename is generated in the current directory. If a directory or filename is provided, the file is saved there. |
 | `-h` | Show help message. |
 
 | Flag | Options | Default |
@@ -45,6 +46,7 @@ The script supports different flags to search and filter where `-u` and `-i` are
 | `-s` | alpha, time | time |
 | `-o` | asc, desc | desc |
 | `-b` | - | main |
+| `-ef` | - | `user-report-{YYYY-MM-DDTHH-mmZ}.json` for `-u` <br> `issue-report-{YYYY-MM-DDTHH-mmZ}.json` for `-i` |
 
 #### Examples
 
@@ -55,11 +57,13 @@ The script supports different flags to search and filter where `-u` and `-i` are
 - `python time-calculator.py -u -f 1900-01-01`
 - `python time-calculator.py -i -t 1900-01-01`
 - `python time-calculator.py -u -b main`
-- `python time-calculator.py -u -e`
-- `python time-calculator.py -i -e > output.json`
+- `python time-calculator.py -i -e`
+- `python time-calculator.py -u -ef`
+- `python time-calculator.py -i -ef="report.json"`
+- `python time-calculator.py -u -ef=".\reports\"`
 
 ### GitHub
 
-The Python script can also be run via GitHub. Create a folder `.github/workflows` in the root of your repository. Now paste `time-calculator.yml` into the newly created folder. It is recommended to rename the GitHub Action to `time.yml`. This GitHub Action does not trigger automatically, so when needed trigger it manually with the [workflow dispatch](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch) event. The time report is then saved as an [artifact](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow#about-workflow-artifacts) in the latest **successful** workflow run.
+The Python script can also be run in a GitHub Action. Create a folder `.github/workflows` in the root of your repository. Now paste `time-calculator.yml` into the newly created folder. It is recommended to rename the GitHub Action to `time.yml`. This GitHub Action does not trigger automatically, so when needed trigger it manually with the [workflow dispatch](https://docs.github.com/en/actions/reference/events-that-trigger-workflows#workflow_dispatch) event. The time report is then saved as an [artifact](https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/storing-and-sharing-data-from-a-workflow#about-workflow-artifacts) in the latest **successful** workflow run.
 
-**Author:** Marko Schrempf
+**Author:** [Marko Schrempf](https://github.com/bitsneak)

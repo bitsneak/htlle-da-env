@@ -13,15 +13,17 @@ Features:
 - Control sort order (--order)
 - Specify date range (--from, --to)
 - Specify branch to analyze (--branch)
-- Export results as JSON (--export)
+- Export results as JSON to stdout (--export)
+- Export results as JSON to file (--export-file)
 """
 
 import sys
 import subprocess
 import re
 import json
+import os
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Normalize command line arguments by mapping long flags to short ones
 flag_map = {
@@ -29,6 +31,7 @@ flag_map = {
     '--issue': '-i',
     '--all': '-a',
     '--export': '-e',
+    '--export-file': '-ef',
     '--help': '-h',
     '--sort': '-s',
     '--order': '-o',
@@ -39,17 +42,18 @@ flag_map = {
 
 # Process command line arguments
 args = sys.argv[1:]
-normalized_args = [flag_map.get(arg, arg) for arg in args]
+normalized_args = [flag_map.get(arg.split("=")[0], arg.split("=")[0]) + (("=" + arg.split("=",1)[1]) if "=" in arg else "") for arg in args]
 
-# Help text displayed when -h/--help is used or when no input is provided
+# Help text
 HELP_TEXT = """Usage:
   python time-calculator.py [flags] [options]
 
 Flags:
   -u, --user             User view: total time per email address
   -i, --issue            Issue view: total time per issue
-  -a, --all              Show detailed breakdown (with -u or -i)
-  -e, --export           Export results as JSON
+  -a, --all              Show detailed breakdown used with -u or -i
+  -e, --export           Export results as JSON to stdout
+  -ef, --export-file     Export results as JSON to file
   -h, --help             Show this help message
 
 Options:
@@ -70,6 +74,7 @@ show_users = '-u' in normalized_args
 show_issues = '-i' in normalized_args
 show_details = '-a' in normalized_args
 export_json = '-e' in normalized_args
+export_file = None
 
 # Default configuration
 branch = 'main'  # Can be any branch name
@@ -144,6 +149,15 @@ if '-t' in normalized_args:
     except:
         print("Invalid -t/--to option. Use date format YYYY-MM-DD.")
         sys.exit(1)
+
+# Parse --export-file option if present
+if any(a.startswith("-ef") for a in normalized_args):
+    ef_index = next(i for i, a in enumerate(normalized_args) if a.startswith("-ef"))
+    raw_arg = args[ef_index]  # get original arg
+    if "=" in raw_arg:
+        export_file = raw_arg.split("=", 1)[1].strip().strip('"').strip("'")
+    else:
+        export_file = ""  # auto filename in current dir
 
 # Determine sort direction
 reverse_sort = (order == 'desc')
@@ -230,15 +244,18 @@ def generate_json_output():
     Generate JSON output with calculated time data.
     
     Returns:
-        dict: Structured data ready for JSON serialization containing:
+        dict: Structured JSON data containing:
+            - timestamp: When the report was generated (ISO 8601 UTC)
+            - from: Start date of the report
+            - to: End date of the report
+            - branch: Analyzed branch
             - view: Type of view (user/issue)
-            - timestamp: When the report was generated
             - sort: Current sort method
             - order: Current sort order
             - data: The actual calculated time data
     """
     output = {
-        "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S"),
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "from": from_date,
         "to": to_date,
         "branch": branch,
@@ -317,11 +334,40 @@ def generate_json_output():
     return output
 
 # Generate and output results
-if export_json:
-    # Output JSON
+if export_json and not export_file:
+    # Print JSON to stdout
     print(json.dumps(generate_json_output(), indent=2))
+if export_file is not None:
+    # Build default filename
+    utc_now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H-%MZ")
+    base_name = f"{'user' if show_users else 'issue'}-report-{utc_now}.json"
+
+    path = export_file
+    if path == "":
+        # Just -ef without argument: current working directory with auto name
+        file_path = os.path.join(os.getcwd(), base_name)
+    else:
+        # Normalize path
+        path = os.path.expanduser(path)
+        path = os.path.abspath(path)
+
+        # If ends with .json → treat as explicit file
+        if path.lower().endswith(".json"):
+            file_path = path
+        else:
+            # Treat as directory (existing or new)
+            os.makedirs(path, exist_ok=True)
+            file_path = os.path.join(path, base_name)
+
+    # Ensure parent directory exists
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+    with open(file_path, "w", encoding="utf-8") as f:
+        json.dump(generate_json_output(), f, indent=2)
+
+    print(f"Exported report to {file_path}")
 else:
-    # Original text output format
+    # Stdout output format
     if show_users:
         # Sort emails for display
         if sort_by == 'alpha':
