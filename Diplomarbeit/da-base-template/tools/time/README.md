@@ -38,7 +38,7 @@ The script supports different flags to search and filter where `-u` and `-i` are
 | `-t` | Specify date up to which to should be counted. |
 | `-b` | Specify branch which to analyze. |
 | `-e` | Export results as JSON to stdout. |
-| `-ef` | Export result as JSON to file. If no filename is provided, an automatic timestamped filename is generated in the current directory. If a directory or filename is provided, the file is saved there. |
+| `-ef` | Export result as JSON to file. If a directory or filename is provided, the file is saved there. |
 | `-h` | Show help message. |
 
 | Flag | Options | Default |
