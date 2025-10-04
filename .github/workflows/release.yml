@@ -5,10 +5,9 @@ on:
     branches:
       - main
   pull_request:
-    types:
-      - closed
     branches:
       - main
+    types: [closed]
 
 permissions:
   contents: write
@@ -27,6 +26,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Create Changelog
         uses: TriPSs/conventional-changelog-action@v6
@@ -36,6 +37,7 @@ jobs:
           git-user-name: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
           skip-git-pull: true
+          skip-on-empty: true
           preset: conventionalcommits
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
@@ -44,7 +46,7 @@ jobs:
   build:
     name: Build Executables
     needs: [changelog]
-    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && needs.changelog.outputs.skipped == 'false'
+    if: needs.changelog.outputs.skipped == 'false'
     strategy:
       matrix:
         include:
@@ -127,7 +129,7 @@ jobs:
   release:
     name: Release
     needs: [changelog, package]
-    if: (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true)) && needs.changelog.outputs.skipped == 'false'
+    if: needs.changelog.outputs.skipped == 'false'
     runs-on: ubuntu-latest
 
     steps:
