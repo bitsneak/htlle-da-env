@@ -1,3 +1,10 @@
+## 0.6.0 (2025-10-04)
+
+
+### Features
+
+* **time:** new time feature ([4c439e2](https://github.com/bitsneak/DA-Template-Testing/commit/4c439e28aa3c57f27b4f047acde30bd3de27d66f))
+
 ## 0.5.0 (2025-10-04)
 
 
