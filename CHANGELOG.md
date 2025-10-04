@@ -1,3 +1,10 @@
+## [0.14.0](https://github.com/bitsneak/DA-Template-Testing/compare/v0.13.1...v0.14.0) (2025-10-04)
+
+
+### Features
+
+* **thesis:** new thesis workflow ([80a8b52](https://github.com/bitsneak/DA-Template-Testing/commit/80a8b52e9f68029c089b65f10a8178b9e57c7bfd))
+
 ## [0.13.1](https://github.com/bitsneak/DA-Template-Testing/compare/v0.13.0...v0.13.1) (2025-10-04)
 
 
