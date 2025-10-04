@@ -144,27 +144,42 @@ jobs:
           path: ./
 
       - name: Get Previous Tag
-        id: previous_tag
+        id: prev_tag
         run: |
-          PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
-          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          prev_tag=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }}^ 2>/dev/null || echo "")
+          echo "previous_tag=$prev_tag" >> $GITHUB_OUTPUT
 
-      - name: Get Contributors
+      - name: Generate Contributors List
         id: contributors
         run: |
-          if [ -n "${{ steps.previous_tag.outputs.previous_tag }}" ]; then
-            CONTRIBUTORS=$(git log ${{ steps.previous_tag.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | while read author; do
-              USERNAME=$(git log --author="$author" --format='%ae' -1 | cut -d'@' -f1)
-              echo "* @$USERNAME"
-            done)
+          if [ -n "${{ steps.prev_tag.outputs.previous_tag }}" ]; then
+            range="${{ steps.prev_tag.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }}"
           else
-            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | while read author; do
-              USERNAME=$(git log --author="$author" --format='%ae' -1 | cut -d'@' -f1)
-              echo "* @$USERNAME"
-            done)
+            range=""
           fi
+          
+          contributors=$(git log $range --format='%aN' | sort -u | sed 's/^/- /')
           echo "contributors<<EOF" >> $GITHUB_OUTPUT
-          echo "$CONTRIBUTORS" >> $GITHUB_OUTPUT
+          echo "$contributors" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Compose Release Notes
+        id: release_notes
+        run: |
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "${{ needs.changelog.outputs.clean_changelog }}" >> $GITHUB_OUTPUT
+          
+          # Add full changelog compare link if possible
+          if [ -n "${{ steps.prev_tag.outputs.previous_tag }}" ]; then
+            echo "" >> $GITHUB_OUTPUT
+            echo "### 🔗 Full Changelog" >> $GITHUB_OUTPUT
+            echo "[$(echo "${{ steps.prev_tag.outputs.previous_tag }}")...${{ needs.changelog.outputs.tag }}](https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }})" >> $GITHUB_OUTPUT
+          fi
+          
+          # Add contributors
+          echo "" >> $GITHUB_OUTPUT
+          echo "### 👥 Contributors" >> $GITHUB_OUTPUT
+          echo "${{ steps.contributors.outputs.contributors }}" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
@@ -174,14 +189,7 @@ jobs:
         with:
           tag_name: ${{ needs.changelog.outputs.tag }}
           name: ${{ needs.changelog.outputs.tag }}
-          body: |
-            ${{ needs.changelog.outputs.clean_changelog }}
-            
-            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}
-            
-            ## Contributors
-            
-            ${{ steps.contributors.outputs.contributors }}
+          body: ${{ steps.release_notes.outputs.body }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
