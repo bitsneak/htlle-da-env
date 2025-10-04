@@ -35,6 +35,7 @@ jobs:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
           version-file: .github/version-info.yml
+          config-file-path: .github/changelog-config.js
 
   build:
     name: Build Executables
