@@ -88,16 +88,23 @@ to_date = None  # Can be a date string in YYYY-MM-DD format
 repo_path = os.getcwd()  # Can be any path
 
 # Parse --path/-p option if present
-if '-p' in normalized_args:
-    try:
-        repo_path = args[normalized_args.index('-p') + 1]
-        repo_path = os.path.expanduser(repo_path)
-        repo_path = os.path.abspath(repo_path)
-        if not os.path.isdir(repo_path):
-            print(f"Invalid -p/--path option: '{repo_path}' is not a directory.")
+if any(a.startswith("-p") for a in normalized_args):
+    p_index = next(i for i, a in enumerate(normalized_args) if a.startswith("-p"))
+    raw_arg = args[p_index]  # original argument as typed
+    if "=" in raw_arg:
+        repo_path = raw_arg.split("=", 1)[1].strip().strip('"').strip("'")
+    else:
+        try:
+            repo_path = args[p_index + 1]
+        except IndexError:
+            print("Invalid -p/--path option. Specify a path to a Git repository.")
             sys.exit(1)
-    except IndexError:
-        print("Invalid -p/--path option. Specify a path to a Git repository.")
+
+    # Normalize and validate path
+    repo_path = os.path.expanduser(repo_path)
+    repo_path = os.path.abspath(repo_path)
+    if not os.path.isdir(repo_path):
+        print(f"Invalid -p/--path option: '{repo_path}' is not a directory.")
         sys.exit(1)
 
 # Check if inside git repo
