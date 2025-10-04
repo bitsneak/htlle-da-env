@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-#    paths:
-#      - Diplomarbeit/**
+    paths:
+      - Diplomarbeit/**
   workflow_dispatch:
 
 env:
