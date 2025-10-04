@@ -1,3 +1,4 @@
+# Author: Marko Schrempf
 name: Release
 
 on:
@@ -22,7 +23,6 @@ jobs:
       tag: ${{ steps.changelog.outputs.tag }}
       clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}
       version: ${{ steps.changelog.outputs.version }}
-      previous_tag: ${{ steps.get_previous_tag.outputs.previous_tag }}
 
     steps:
       - name: Checkout Repository
@@ -43,17 +43,6 @@ jobs:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
           version-file: .github/version-info.yml
-
-      - name: Get Previous Tag
-        id: get_previous_tag
-        run: |
-          TAGS=$(git tag --sort=-version:refname)
-          PREVIOUS_TAG=$(echo "$TAGS" | sed -n '2p')
-          if [ -z "$PREVIOUS_TAG" ]; then
-            echo "previous_tag=" >> $GITHUB_OUTPUT
-          else
-            echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
-          fi
 
   build:
     name: Build Executables
@@ -76,8 +65,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       
       - name: Set Up Python
         uses: actions/setup-python@v6
@@ -150,7 +137,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Needed to get previous tags
 
       - name: Download Release Archives
         uses: actions/download-artifact@v4
@@ -158,72 +145,31 @@ jobs:
           name: release-archives
           path: ./
 
-      - name: Get Contributors
+      # Get previous tag for "Full Changelog" link
+      - name: Get previous tag
+        id: previoustag
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }}^ 2>/dev/null || echo "")
+          echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
+
+      # Generate a contributors list between last and current release
+      - name: Generate contributors list
         id: contributors
         run: |
-          if [ -n "${{ needs.changelog.outputs.previous_tag }}" ]; then
-            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%ae|%an' | sort -u)
+          PREV_TAG=${{ steps.previoustag.outputs.tag }}
+          CURRENT_TAG=${{ needs.changelog.outputs.tag }}
+
+          if [ -n "$PREV_TAG" ]; then
+            CONTRIBUTORS=$(git log $PREV_TAG..$CURRENT_TAG --format='%aN' | sort -u | sed 's/^/- /')
           else
-            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%ae|%an' | sort -u)
+            CONTRIBUTORS=$(git log --format='%aN' | sort -u | sed 's/^/- /')
           fi
-          
-          # Extract unique GitHub usernames from commit authors
-          USERNAMES=""
-          while IFS='|' read -r email name; do
-            # Try to extract GitHub username from email
-            if [[ $email == *"@users.noreply.github.com" ]]; then
-              USERNAME=$(echo $email | sed 's/@users.noreply.github.com//' | sed 's/^[0-9]*+//')
-              USERNAMES="$USERNAMES @$USERNAME"
-            elif [[ $email == *"[bot]@"* ]]; then
-              USERNAME=$(echo $email | sed 's/@.*//')
-              USERNAMES="$USERNAMES @$USERNAME"
-            fi
-          done <<< "$CONTRIBUTORS"
-          
-          # Remove duplicates and format
-          USERNAMES=$(echo $USERNAMES | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $//' | sed 's/ / and /g')
-          
-          # Fallback to names if no usernames found
-          if [ -z "$USERNAMES" ]; then
-            USERNAMES=$(echo "$CONTRIBUTORS" | cut -d'|' -f2 | sort -u | paste -sd " and " -)
-          fi
-          
-          echo "contributors=$USERNAMES" >> $GITHUB_OUTPUT
 
-      - name: Create Release Body
-        id: release_body
-        run: |
-          CHANGELOG="${{ needs.changelog.outputs.clean_changelog }}"
-          
-          if [ -n "${{ needs.changelog.outputs.previous_tag }}" ]; then
-            FULL_CHANGELOG="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.changelog.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}"
-          else
-            FULL_CHANGELOG="**Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ needs.changelog.outputs.tag }}"
-          fi
-          
-          CONTRIBUTORS="${{ steps.contributors.outputs.contributors }}"
-          
-          BODY=$(cat <<EOF
-          ${CHANGELOG}
-
-          ${FULL_CHANGELOG}
-          EOF
-          )
-          
-          # Only add contributors section if there are contributors
-          if [ -n "$CONTRIBUTORS" ]; then
-            BODY=$(cat <<EOF
-          ${BODY}
-
-          **Contributors**: ${CONTRIBUTORS}
-          EOF
-          )
-          fi
-          
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "contributors<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTRIBUTORS" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
+      # Create the GitHub Release with changelog, comparison link, and contributors
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -231,7 +177,13 @@ jobs:
         with:
           tag_name: ${{ needs.changelog.outputs.tag }}
           name: ${{ needs.changelog.outputs.tag }}
-          body: ${{ steps.release_body.outputs.body }}
+          body: |
+            ${{ needs.changelog.outputs.clean_changelog }}
+
+            **Full Changelog:** [${{ steps.previoustag.outputs.tag }}...${{ needs.changelog.outputs.tag }}](https://github.com/${{ github.repository }}/compare/${{ steps.previoustag.outputs.tag }}...${{ needs.changelog.outputs.tag }})
+
+            **Contributors:**
+            ${{ steps.contributors.outputs.contributors }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
