@@ -1,3 +1,18 @@
+## [0.12.0](https://github.com/bitsneak/DA-Template-Testing/compare/v0.11.0...v0.12.0) (2025-10-04)
+
+
+### Features
+
+* **bug:** a ([81d9b88](https://github.com/bitsneak/DA-Template-Testing/commit/81d9b88498cdd42f0e9dd37bf413a1a807548129))
+* **release:** a ([9768650](https://github.com/bitsneak/DA-Template-Testing/commit/9768650a9bae6e4bce2c63f913a0c68ba9c3beba))
+
+
+### Bug Fixes
+
+* **bug:** a ([4fe2951](https://github.com/bitsneak/DA-Template-Testing/commit/4fe2951354fa71c1535df98752ac2908bc2a6ead))
+* **release:** a ([5249322](https://github.com/bitsneak/DA-Template-Testing/commit/5249322d9c1a8d49c3fb56f71ced136322b7bb49))
+* **release:** a ([5fe757d](https://github.com/bitsneak/DA-Template-Testing/commit/5fe757d3d6c60c670b6023fccb52d0526bee1c74))
+
 # 0.11.0 (2025-10-04)
 
 
