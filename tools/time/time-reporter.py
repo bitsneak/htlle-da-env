@@ -13,6 +13,7 @@ Features:
 - Control sort order (--order)
 - Specify date range (--from, --to)
 - Specify branch to analyze (--branch)
+- Specify path to a git repository (--path)
 - Export results as JSON to stdout (--export)
 - Export results as JSON to file (--export-file)
 """
@@ -37,7 +38,8 @@ flag_map = {
     '--order': '-o',
     '--branch': '-b',
     '--from': '-f',
-    '--to': '-t'
+    '--to': '-t',
+    '--path': '-p'
 }
 
 # Process command line arguments
@@ -54,6 +56,7 @@ Flags:
   -a, --all              Show detailed breakdown used with -u or -i
   -e, --export           Export results as JSON to stdout
   -ef, --export-file     Export results as JSON to file
+  -p, --path             Specify path to a git repository
   -h, --help             Show this help message
 
 Options:
@@ -82,12 +85,26 @@ sort_by = 'time'  # Can be 'time' or 'alpha'
 order = 'desc'     # Can be 'asc' or 'desc'
 from_date = None  # Can be a date string in YYYY-MM-DD format
 to_date = None  # Can be a date string in YYYY-MM-DD format
+repo_path = os.getcwd()  # Can be any path
+
+# Parse --path/-p option if present
+if '-p' in normalized_args:
+    try:
+        repo_path = args[normalized_args.index('-p') + 1]
+        repo_path = os.path.expanduser(repo_path)
+        repo_path = os.path.abspath(repo_path)
+        if not os.path.isdir(repo_path):
+            print(f"Invalid -p/--path option: '{repo_path}' is not a directory.")
+            sys.exit(1)
+    except IndexError:
+        print("Invalid -p/--path option. Specify a path to a Git repository.")
+        sys.exit(1)
 
 # Check if inside git repo
 try:
-    subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check=True, capture_output=True)
+    subprocess.run(["git", "rev-parse", "--is-inside-work-tree"], check=True, capture_output=True, cwd=repo_path)
 except subprocess.CalledProcessError:
-    print("Error: Not inside a Git repository.")
+    print("Error: Not a Git repository.")
     sys.exit(1)
 
 # Validate that at least one view option is selected
@@ -105,7 +122,7 @@ if '-b' in normalized_args:
 
 # Check if branch exists
 try:
-    subprocess.run(["git", "rev-parse", "--verify", branch], check=True, capture_output=True)
+    subprocess.run(["git", "rev-parse", "--verify", branch], check=True, capture_output=True, cwd=repo_path)
 except subprocess.CalledProcessError:
     print(f"Invalid -b/--branch option. Branch '{branch}' does not exist.")
     sys.exit(1)
@@ -184,7 +201,7 @@ if to_date:
     git_log_cmd.append(f'--to={to_date}')
 
 try:
-    result = subprocess.run(git_log_cmd, capture_output=True, text=True, check=True)
+    result = subprocess.run(git_log_cmd, capture_output=True, text=True, check=True, cwd=repo_path)
     log_lines = result.stdout.splitlines()
 except subprocess.CalledProcessError:
     print("Error: Could not retrieve git log.")
@@ -231,7 +248,7 @@ if from_date is None:
     try:
         result = subprocess.run(
             ["git", "log", "--reverse", "--format=format:%as", "--all"],
-            capture_output=True, text=True, check=True)
+            capture_output=True, text=True, check=True, cwd=repo_path)
         from_date = result.stdout.strip().splitlines()[0]  # first line only
     except subprocess.CalledProcessError:
         from_date = "unknown"
