@@ -145,9 +145,7 @@ jobs:
 
       - name: Get Previous Tag
         id: prev_tag
-        run: |
-          prev_tag=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }}^ 2>/dev/null || echo "")
-          echo "previous_tag=$prev_tag" >> $GITHUB_OUTPUT
+        run: echo "previous_tag=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }} || echo "")" >> $GITHUB_OUTPUT
 
       - name: Generate Contributors List
         id: contributors
@@ -163,25 +161,6 @@ jobs:
           echo "$contributors" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Compose Release Notes
-        id: release_notes
-        run: |
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "${{ needs.changelog.outputs.clean_changelog }}" >> $GITHUB_OUTPUT
-          
-          # Add full changelog compare link if possible
-          if [ -n "${{ steps.prev_tag.outputs.previous_tag }}" ]; then
-            echo "" >> $GITHUB_OUTPUT
-            echo "### 🔗 Full Changelog" >> $GITHUB_OUTPUT
-            echo "[$(echo "${{ steps.prev_tag.outputs.previous_tag }}")...${{ needs.changelog.outputs.tag }}](https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }})" >> $GITHUB_OUTPUT
-          fi
-          
-          # Add contributors
-          echo "" >> $GITHUB_OUTPUT
-          echo "### 👥 Contributors" >> $GITHUB_OUTPUT
-          echo "${{ steps.contributors.outputs.contributors }}" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -189,7 +168,14 @@ jobs:
         with:
           tag_name: ${{ needs.changelog.outputs.tag }}
           name: ${{ needs.changelog.outputs.tag }}
-          body: ${{ steps.release_notes.outputs.body }}
+          body: |
+            ${{ needs.changelog.outputs.clean_changelog }}
+
+            **Full Changelog:** https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}
+
+            ## Contributors
+            ${{ steps.contributors.outputs.contributors }}
+
           files: |
             time-reporter.zip
             time-reporter.tar.gz
