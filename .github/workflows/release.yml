@@ -94,6 +94,7 @@ jobs:
           mkdir -p release/time-reporter
           cp LICENSE release/time-reporter/
           cp tools/time/README.md release/time-reporter/
+          cp tools/time/time-reporter.py release/time-reporter/
           cp executables/executable-linux/time-reporter-ln64 release/time-reporter/
           cp executables/executable-macos/time-reporter-mac64 release/time-reporter/
           cp executables/executable-windows/time-reporter-wn64.exe release/time-reporter/
