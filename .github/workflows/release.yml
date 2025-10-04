@@ -22,6 +22,7 @@ jobs:
       tag: ${{ steps.changelog.outputs.tag }}
       clean_changelog: ${{ steps.changelog.outputs.clean_changelog }}
       version: ${{ steps.changelog.outputs.version }}
+      previous_tag: ${{ steps.get_previous_tag.outputs.previous_tag }}
 
     steps:
       - name: Checkout Repository
@@ -42,6 +43,17 @@ jobs:
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
           version-file: .github/version-info.yml
+
+      - name: Get Previous Tag
+        id: get_previous_tag
+        run: |
+          TAGS=$(git tag --sort=-version:refname)
+          PREVIOUS_TAG=$(echo "$TAGS" | sed -n '2p')
+          if [ -z "$PREVIOUS_TAG" ]; then
+            echo "previous_tag=" >> $GITHUB_OUTPUT
+          else
+            echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          fi
 
   build:
     name: Build Executables
@@ -64,6 +76,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       
       - name: Set Up Python
         uses: actions/setup-python@v6
@@ -142,6 +156,42 @@ jobs:
           name: release-archives
           path: ./
 
+      - name: Get Contributors
+        id: contributors
+        run: |
+          if [ -n "${{ needs.changelog.outputs.previous_tag }}" ]; then
+            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | sed 's/^/@/' | paste -sd ", " -)
+          else
+            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | sed 's/^/@/' | paste -sd ", " -)
+          fi
+          echo "contributors=$CONTRIBUTORS" >> $GITHUB_OUTPUT
+
+      - name: Create Release Body
+        id: release_body
+        run: |
+          CHANGELOG="${{ needs.changelog.outputs.clean_changelog }}"
+          
+          if [ -n "${{ needs.changelog.outputs.previous_tag }}" ]; then
+            FULL_CHANGELOG="**Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ needs.changelog.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}"
+          else
+            FULL_CHANGELOG="**Full Changelog**: https://github.com/${{ github.repository }}/commits/${{ needs.changelog.outputs.tag }}"
+          fi
+          
+          CONTRIBUTORS="${{ steps.contributors.outputs.contributors }}"
+          
+          BODY=$(cat <<EOF
+          ${CHANGELOG}
+
+          ${FULL_CHANGELOG}
+
+          **Contributors**: ${CONTRIBUTORS}
+          EOF
+          )
+          
+          echo "body<<EOF" >> $GITHUB_OUTPUT
+          echo "$BODY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -149,7 +199,7 @@ jobs:
         with:
           tag_name: ${{ needs.changelog.outputs.tag }}
           name: ${{ needs.changelog.outputs.tag }}
-          body: ${{ needs.changelog.outputs.clean_changelog }}
+          body: ${{ steps.release_body.outputs.body }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
