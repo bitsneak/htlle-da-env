@@ -149,6 +149,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Download Release Archives
         uses: actions/download-artifact@v4
@@ -160,11 +162,33 @@ jobs:
         id: contributors
         run: |
           if [ -n "${{ needs.changelog.outputs.previous_tag }}" ]; then
-            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | sed 's/^/@/' | paste -sd ", " -)
+            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%ae|%an' | sort -u)
           else
-            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | sed 's/^/@/' | paste -sd ", " -)
+            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%ae|%an' | sort -u)
           fi
-          echo "contributors=$CONTRIBUTORS" >> $GITHUB_OUTPUT
+          
+          # Extract unique GitHub usernames from commit authors
+          USERNAMES=""
+          while IFS='|' read -r email name; do
+            # Try to extract GitHub username from email
+            if [[ $email == *"@users.noreply.github.com" ]]; then
+              USERNAME=$(echo $email | sed 's/@users.noreply.github.com//' | sed 's/^[0-9]*+//')
+              USERNAMES="$USERNAMES @$USERNAME"
+            elif [[ $email == *"[bot]@"* ]]; then
+              USERNAME=$(echo $email | sed 's/@.*//')
+              USERNAMES="$USERNAMES @$USERNAME"
+            fi
+          done <<< "$CONTRIBUTORS"
+          
+          # Remove duplicates and format
+          USERNAMES=$(echo $USERNAMES | tr ' ' '\n' | sort -u | tr '\n' ' ' | sed 's/ $//' | sed 's/ / and /g')
+          
+          # Fallback to names if no usernames found
+          if [ -z "$USERNAMES" ]; then
+            USERNAMES=$(echo "$CONTRIBUTORS" | cut -d'|' -f2 | sort -u | paste -sd " and " -)
+          fi
+          
+          echo "contributors=$USERNAMES" >> $GITHUB_OUTPUT
 
       - name: Create Release Body
         id: release_body
@@ -183,10 +207,18 @@ jobs:
           ${CHANGELOG}
 
           ${FULL_CHANGELOG}
+          EOF
+          )
+          
+          # Only add contributors section if there are contributors
+          if [ -n "$CONTRIBUTORS" ]; then
+            BODY=$(cat <<EOF
+          ${BODY}
 
           **Contributors**: ${CONTRIBUTORS}
           EOF
           )
+          fi
           
           echo "body<<EOF" >> $GITHUB_OUTPUT
           echo "$BODY" >> $GITHUB_OUTPUT
