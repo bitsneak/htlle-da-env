@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - main
-    paths:
-      - Diplomarbeit/**
+#    paths:
+#      - Diplomarbeit/**
   workflow_dispatch:
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends git build-essential make-guile texlive-full pandoc pandoc-citeproc tree rsync hunspell hunspell-de-at hunspell-en-us
+          sudo apt-get install -y --no-install-recommends git build-essential make-guile texlive-full pandoc pandoc-citeproc tree rsync
           
       - name: Build Diploma Thesis
         run: |
@@ -57,6 +57,10 @@ jobs:
           id: message
           run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
+        - name: Extract Commit Message 2
+          id: get_commit_message
+          run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_ENV
+
         - name: Send Diploma Thesis
           uses: dawidd6/action-send-mail@v5
           with:
@@ -67,5 +71,5 @@ jobs:
             to: ${{ secrets.RECEIVING_MAIL }}
             from: ${{ secrets.SENDING_MAIL }}
             subject: "Diplomarbeit"
-            body: ${{ steps.message.outputs.commit_message }}
+            body: ${{ steps.message.outputs.commit_message }} || ${{ env.commit_message }}
             attachments: diplomarbeit-${{ needs.build-upload.outputs.timestamp }}.pdf
