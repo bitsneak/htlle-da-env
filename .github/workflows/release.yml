@@ -31,11 +31,10 @@ jobs:
           git-user-name: "github-actions[bot]"
           git-user-email: "github-actions[bot]@users.noreply.github.com"
           skip-git-pull: true
-          preset: angular
+          preset: conventionalcommits
           input-file: CHANGELOG.md
           output-file: CHANGELOG.md
           version-file: .github/version-info.yml
-          #config-file-path: .github/changelog-config.js
 
   build:
     name: Build Executables

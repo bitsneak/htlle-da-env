@@ -38,7 +38,8 @@ The script supports different flags to search and filter where `-u` and `-i` are
 | `-t` | Specify date up to which to should be counted. |
 | `-b` | Specify branch which to analyze. |
 | `-e` | Export results as JSON to stdout. |
-| `-ef` | Export results as JSON to a file. If a directory or filename is provided, the file is saved there. |
+| `-ef` | Export results as JSON to a file. If a directory or filename is provided the file is saved there. |
+| `-p` | Specify the path to a git repository |
 | `-h` | Show help message. |
 
 | Flag | Options | Default |
@@ -61,6 +62,11 @@ The script supports different flags to search and filter where `-u` and `-i` are
 - `python time-reporter.py -u -ef`
 - `python time-reporter.py -i -ef="report.json"`
 - `python time-reporter.py -u -ef=".\reports\"`
+- `python time-reporter.py -i -p=".\repository\"`
+
+### Executables
+
+The Python script can also be run without Python installed using the provided executables for your operating system in the suitable zip file provided in the [latest release](https://github.com/HTL-Leoben/da-base-template/releases/latest).
 
 ### GitHub
 
