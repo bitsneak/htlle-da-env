@@ -47,7 +47,7 @@ jobs:
 
   send:
       needs: build-upload
-      if: success() && env.SEND_EMAIL == 'true'
+      if: success() && ${{ env.SEND_EMAIL == 'true' }}
       runs-on: ubuntu-latest
 
       steps:
