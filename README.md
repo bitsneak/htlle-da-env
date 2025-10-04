@@ -4,4 +4,3 @@ Hier kommit eine kurze Beschreibung Ihrer Diplomarbeit hin, damit die Besucher I
 
 Hilfe zu Benutzung dieses Templates finden Sie in der Datei [USAGE.md](USAGE.md)
 qawd
-qwe
