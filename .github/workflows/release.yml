@@ -69,7 +69,7 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.11'
+          python-version: '3.x'
       
       - name: Install PyInstaller
         run: pip install pyinstaller
@@ -136,8 +136,6 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Needed to get previous tags
 
       - name: Download Release Archives
         uses: actions/download-artifact@v4
@@ -145,31 +143,6 @@ jobs:
           name: release-archives
           path: ./
 
-      # Get previous tag for "Full Changelog" link
-      - name: Get previous tag
-        id: previoustag
-        run: |
-          PREV_TAG=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }}^ 2>/dev/null || echo "")
-          echo "tag=$PREV_TAG" >> $GITHUB_OUTPUT
-
-      # Generate a contributors list between last and current release
-      - name: Generate contributors list
-        id: contributors
-        run: |
-          PREV_TAG=${{ steps.previoustag.outputs.tag }}
-          CURRENT_TAG=${{ needs.changelog.outputs.tag }}
-
-          if [ -n "$PREV_TAG" ]; then
-            CONTRIBUTORS=$(git log $PREV_TAG..$CURRENT_TAG --format='%aN' | sort -u | sed 's/^/- /')
-          else
-            CONTRIBUTORS=$(git log --format='%aN' | sort -u | sed 's/^/- /')
-          fi
-
-          echo "contributors<<EOF" >> $GITHUB_OUTPUT
-          echo "$CONTRIBUTORS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
-      # Create the GitHub Release with changelog, comparison link, and contributors
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -179,11 +152,10 @@ jobs:
           name: ${{ needs.changelog.outputs.tag }}
           body: |
             ${{ needs.changelog.outputs.clean_changelog }}
-
-            **Full Changelog:** [${{ steps.previoustag.outputs.tag }}...${{ needs.changelog.outputs.tag }}](https://github.com/${{ github.repository }}/compare/${{ steps.previoustag.outputs.tag }}...${{ needs.changelog.outputs.tag }})
-
-            **Contributors:**
-            ${{ steps.contributors.outputs.contributors }}
+            
+            ---
+            
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
