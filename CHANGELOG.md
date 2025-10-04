@@ -1,3 +1,10 @@
+## 0.10.0 (2025-10-04)
+
+
+### Features
+
+* **test:** sds ([16312bb](https://github.com/bitsneak/DA-Template-Testing/commit/16312bba92b53c2a25a40d7ce288da105625ca68))
+
 ## 0.9.0 (2025-10-04)
 
 
