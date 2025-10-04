@@ -1,7 +1,7 @@
 """
 Author: Marko Schrempf
 
-Git Time Calculator
+Git Time Reporter
 
 This script processes git log output to calculate time spent by users or on issues.
 
@@ -46,7 +46,7 @@ normalized_args = [flag_map.get(arg.split("=")[0], arg.split("=")[0]) + (("=" + 
 
 # Help text
 HELP_TEXT = """Usage:
-  python time-calculator.py [flags] [options]
+  python time-reporter.py [flags] [options]
 
 Flags:
   -u, --user             User view: total time per email address
