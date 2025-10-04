@@ -1,3 +1,12 @@
+# 0.11.0 (2025-10-04)
+
+
+### Features
+
+* **test:** test ([e276882](https://github.com/bitsneak/DA-Template-Testing/commit/e27688249d97a5e49a434cdc535e7038c553840d))
+
+
+
 ## 0.10.0 (2025-10-04)
 
 
