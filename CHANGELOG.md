@@ -1,3 +1,14 @@
+## [1.0.0](https://github.com/bitsneak/DA-Template-Testing/compare/v0.16.0...v1.0.0) (2025-10-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* **action:** changed variable names and file output for better usability
+
+### Code Refactoring
+
+* **action:** changed variable names and file output for better usability ([21c62e4](https://github.com/bitsneak/DA-Template-Testing/commit/21c62e440d812ea869c2bc12032f711df08a0b48))
+
 ## [0.16.0](https://github.com/bitsneak/DA-Template-Testing/compare/v0.15.0...v0.16.0) (2025-10-04)
 
 
