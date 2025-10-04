@@ -9,9 +9,13 @@ on:
 #      - Diplomarbeit/**
   workflow_dispatch:
 
+env:
+  DOCKERHUB_USERNAME: bytebang
+  DOCKERHUB_REPOSITORY: htlle-da-builder
+
 jobs:
-  build-upload:
-    runs-on: ubuntu-22.04
+  build:
+    runs-on: ubuntu-latest
     outputs:
       timestamp: ${{ steps.timestamp.outputs.datetime }}
 
@@ -19,15 +23,30 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Install Dependencies
+      - name: Cache Docker Image
+        id: cache-docker
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.docker
+          key: docker-${{ env.DOCKERHUB_USERNAME }}-${{ env.DOCKERHUB_REPOSITORY }}-${{ hashFiles('**/da-base-template/tools/docker/Dockerfile') }}
+          restore-keys: ${{ runner.os }}-docker-
+
+      - name: Create Docker Cache Directory
+        if: steps.cache-docker.outputs.cache-hit != 'true'
+        run: mkdir -p /tmp/.docker
+
+      - name: Load Cached Docker Image
+        if: steps.cache-docker.outputs.cache-hit == 'true'
+        run: docker load -i /tmp/.docker/image.tar
+
+      - name: Pull Docker Image
+        if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential make-guile texlive-full pandoc pandoc-citeproc tree rsync
-          
+          docker pull ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}
+          docker save ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }} -o /tmp/.docker/image.tar
+
       - name: Build Diploma Thesis
-        run: |
-          cd Diplomarbeit
-          make pdf -C da-base-template SOURCEDIR=$(pwd)
+        run: docker run -v ${{ github.workspace }}/Diplomarbeit:/workspace ${{ env.DOCKERHUB_USERNAME }}/${{ env.DOCKERHUB_REPOSITORY }}
 
       - name: Get UTC Timestamp
         id: timestamp
@@ -43,32 +62,32 @@ jobs:
           path: diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
 
   send:
-      needs: build-upload
-      if: success()
-      runs-on: ubuntu-latest
+    needs: build
+    if: success()
+    runs-on: ubuntu-latest
 
-      steps:
-        - name: Checkout Repository
-          uses: actions/checkout@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-        - name: Download Diploma Thesis
-          uses: actions/download-artifact@v4
-          with:
-            name: diplomarbeit-${{ needs.build-upload.outputs.timestamp }}
+      - name: Download Diploma Thesis
+        uses: actions/download-artifact@v4
+        with:
+          name: diplomarbeit-${{ needs.build.outputs.timestamp }}
 
-        - name: Extract Commit Message
-          id: message
-          run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
+      - name: Extract Commit Message
+        id: message
+        run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
-        - name: Send Diploma Thesis
-          uses: dawidd6/action-send-mail@v5
-          with:
-            username: ${{ secrets.SENDING_MAIL }}
-            password: ${{ secrets.SENDING_MAIL_PASSWORD }}
-            server_address: ${{ secrets.SMTP_SERVER }}
-            server_port: ${{ secrets.SMTP_PORT }}
-            to: ${{ secrets.RECEIVING_MAIL }}
-            from: ${{ secrets.SENDING_MAIL }}
-            subject: "Diplomarbeit"
-            body: ${{ steps.message.outputs.commit_message }}
-            attachments: diplomarbeit-${{ needs.build-upload.outputs.timestamp }}.pdf
+      - name: Send Diploma Thesis
+        uses: dawidd6/action-send-mail@v5
+        with:
+          username: ${{ secrets.SENDING_MAIL }}
+          password: ${{ secrets.SENDING_MAIL_PASSWORD }}
+          server_address: ${{ secrets.SMTP_SERVER }}
+          server_port: ${{ secrets.SMTP_PORT }}
+          to: ${{ secrets.RECEIVING_MAIL }}
+          from: ${{ secrets.SENDING_MAIL }}
+          subject: "Diplomarbeit"
+          body: ${{ steps.message.outputs.commit_message }}
+          attachments: diplomarbeit-${{ needs.build.outputs.timestamp }}.pdf
