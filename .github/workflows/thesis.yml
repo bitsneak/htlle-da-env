@@ -9,9 +9,6 @@ on:
 #      - Diplomarbeit/**
   workflow_dispatch:
 
-env:
-  SEND_EMAIL: true
-
 jobs:
   build-upload:
     runs-on: ubuntu-22.04
@@ -47,7 +44,7 @@ jobs:
 
   send:
       needs: build-upload
-      if: success() && env.SEND_EMAIL == 'true'
+      if: success()
       runs-on: ubuntu-latest
 
       steps:
