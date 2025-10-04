@@ -13,9 +13,8 @@ Features:
 - Control sort order (--order)
 - Specify date range (--from, --to)
 - Specify branch to analyze (--branch)
-- Specify path to a git repository (--path)
-- Export results as JSON to stdout (--export)
-- Export results as JSON to file (--export-file)
+- Specify the path to a git repository (--path)
+- Export results as JSON to stdout or file (--export, --export-file)
 """
 
 import sys
