@@ -143,6 +143,30 @@ jobs:
           name: release-archives
           path: ./
 
+      - name: Get Previous Tag
+        id: previous_tag
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          echo "previous_tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+
+      - name: Get Contributors
+        id: contributors
+        run: |
+          if [ -n "${{ steps.previous_tag.outputs.previous_tag }}" ]; then
+            CONTRIBUTORS=$(git log ${{ steps.previous_tag.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | while read author; do
+              USERNAME=$(git log --author="$author" --format='%ae' -1 | cut -d'@' -f1)
+              echo "* @$USERNAME"
+            done)
+          else
+            CONTRIBUTORS=$(git log ${{ needs.changelog.outputs.tag }} --format='%an' | sort -u | while read author; do
+              USERNAME=$(git log --author="$author" --format='%ae' -1 | cut -d'@' -f1)
+              echo "* @$USERNAME"
+            done)
+          fi
+          echo "contributors<<EOF" >> $GITHUB_OUTPUT
+          echo "$CONTRIBUTORS" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -153,9 +177,11 @@ jobs:
           body: |
             ${{ needs.changelog.outputs.clean_changelog }}
             
-            ---
-            
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.previous_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}
+            
+            ## Contributors
+            
+            ${{ steps.contributors.outputs.contributors }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
