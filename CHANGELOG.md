@@ -1,3 +1,10 @@
+## [1.8.0](https://github.com/bitsneak/DA-Template-Testing/compare/v1.7.0...v1.8.0) (2025-10-11)
+
+
+### Features
+
+* **release:** change release action ([71b4fed](https://github.com/bitsneak/DA-Template-Testing/commit/71b4fed11d0a56a236d98c7cddec560dbeaeb799))
+
 ## [1.7.0](https://github.com/bitsneak/DA-Template-Testing/compare/v1.6.0...v1.7.0) (2025-10-04)
 
 
