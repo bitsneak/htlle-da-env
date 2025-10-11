@@ -69,7 +69,7 @@ jobs:
       - name: Set Up Python
         uses: actions/setup-python@v6
         with:
-          python-version: '3.x'
+          python-version: '3.11'
       
       - name: Install PyInstaller
         run: pip install pyinstaller
@@ -143,24 +143,6 @@ jobs:
           name: release-archives
           path: ./
 
-      - name: Get Previous Tag
-        id: prev_tag
-        run: echo "previous_tag=$(git describe --tags --abbrev=0 ${{ needs.changelog.outputs.tag }} || echo "")" >> $GITHUB_OUTPUT
-
-      - name: Generate Contributors List
-        id: contributors
-        run: |
-          if [ -n "${{ steps.prev_tag.outputs.previous_tag }}" ]; then
-            range="${{ steps.prev_tag.outputs.previous_tag }}..${{ needs.changelog.outputs.tag }}"
-          else
-            range=""
-          fi
-          
-          contributors=$(git log $range --format='%aN' | sort -u | sed 's/^/- /')
-          echo "contributors<<EOF" >> $GITHUB_OUTPUT
-          echo "$contributors" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         env:
@@ -168,14 +150,7 @@ jobs:
         with:
           tag_name: ${{ needs.changelog.outputs.tag }}
           name: ${{ needs.changelog.outputs.tag }}
-          body: |
-            ${{ needs.changelog.outputs.clean_changelog }}
-
-            **Full Changelog:** https://github.com/${{ github.repository }}/compare/${{ steps.prev_tag.outputs.previous_tag }}...${{ needs.changelog.outputs.tag }}
-
-            ## Contributors
-            ${{ steps.contributors.outputs.contributors }}
-
+          body: ${{ needs.changelog.outputs.clean_changelog }}
           files: |
             time-reporter.zip
             time-reporter.tar.gz
