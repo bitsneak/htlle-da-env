@@ -22,7 +22,7 @@ jobs:
         run: mv da-template/* .
 
       - name: Build And Send Diploma Thesis
-        uses: ./DA-Template-Testing
+        uses: .
         with:
           manual-mode: ${{ github.workspace }}
           mail: ${{ secrets.SENDING_MAIL }}
