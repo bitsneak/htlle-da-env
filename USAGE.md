@@ -2,7 +2,7 @@
 
 Dieses Repository enthält ein LaTeX-Template für Diplomarbeiten an der HTL Leoben. Diese Anleitung erklärt Schritt für Schritt, wie Sie das Template **als Vorlage nutzen** und **automatisch eine PDF-Datei** über GitHub Actions erzeugen können.
 Es ist dazu keine lokale Installation notwendig - solange das Repository öffentlich sichtbar ist. Sollten Sie eine lokale Instalaltion wünschen oder genauere Informationen benötigen wie der Buildprozess erfolgt dann können Sie das im [da-base-template](Diplomarbeit/da-base-template/README.md) nachlesen.
-
+ada
 ---
 
 ## 🚀 Schritt 1: Repository kopieren (nicht forken!)
