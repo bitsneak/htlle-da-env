@@ -21,8 +21,11 @@ jobs:
       - name: Setup Folder Structure
         run: mv da-template/* .
 
+      - name: Print folder 1
+        run: ls -la .
+
       - name: Build And Send Diploma Thesis
-        uses: .
+        uses: ./
         with:
           manual-mode: ${{ github.workspace }}
           mail: ${{ secrets.SENDING_MAIL }}
