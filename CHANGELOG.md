@@ -1,3 +1,10 @@
+## [2.4.0](https://github.com/bitsneak/DA-Template-Testing/compare/v2.3.0...v2.4.0) (2025-10-24)
+
+
+### Features
+
+* **test:** test ([9990c3f](https://github.com/bitsneak/DA-Template-Testing/commit/9990c3fd35d0cd5914c1c5df4d7164c6f11eb5ef))
+
 ## [2.3.0](https://github.com/bitsneak/DA-Template-Testing/compare/v2.2.0...v2.3.0) (2025-10-24)
 
 
