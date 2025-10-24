@@ -15,6 +15,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
       - name: Clone Diploma Thesis Repository
         run: git clone https://github.com/HTL-Leoben/da-template
 
