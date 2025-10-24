@@ -1,6 +1,6 @@
 name: Build and send diploma thesis
 description: GitHub action to build and send a diploma thesis using the corresponding Docker image from the school HTL Leoben
-author: bitsneak
+author: Marko Schrempf
 branding:
   icon: book
   color: orange
