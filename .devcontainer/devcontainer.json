@@ -1,9 +1,9 @@
 {
     "name": "htlle-da-builder",
-    //"image": "bytebang/htlle-da-builder:latest",
-    "build": {
+    "image": "bitsneak/htlle-da-env:latest",
+    /*"build": {
 		"dockerfile": "../Diplomarbeit/da-base-template/tools/docker/Dockerfile"
-	},
+	},*/
     
     // Iinstall workspace extensions inside container
     "customizations": {
@@ -47,10 +47,8 @@
     "mounts": [
         "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
         "source=${localEnv:USERPROFILE}\\.gitconfig,target=/home/builder/.gitconfig,type=bind,readonly",
-        "source=${localEnv:USERPROFILE}\\.ssh,target=/home/builder/.ssh,type=bind,readonly"
+        //"source=${localEnv:USERPROFILE}\\.ssh,target=/home/builder/.ssh,type=bind,readonly"
     ],
     "workspaceFolder": "/workspace/Diplomarbeit",
-    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf",
-    // Override entrypoint
-    "overrideCommand": true
+    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
 }
