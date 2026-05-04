@@ -45,8 +45,11 @@
 
     "mounts": [
         "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-        "source=${localEnv:USERPROFILE}\\.gitconfig,target=/home/builder/.gitconfig,type=bind,readonly"
+        "source=${localEnv:USERPROFILE}\\.gitconfig,target=/home/builder/.gitconfig,type=bind,readonly",
+        "source=${localEnv:USERPROFILE}\\.ssh,target=/home/builder/.ssh,type=bind,readonly"
     ],
     "workspaceFolder": "/workspace/Diplomarbeit",
-    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
+    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf",
+    // Override entrypoint
+    "overrideCommand": true
 }
