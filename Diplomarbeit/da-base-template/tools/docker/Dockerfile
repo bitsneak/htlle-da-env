@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         make \
         rsync \
         tree \
+        ca-certificates \
         bash-completion \
         # Pandoc
         pandoc \
@@ -32,7 +33,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         cm-super \
         lmodern \
         gsfonts && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* # buildkit
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy scripts
 COPY scripts/validator.sh /scripts/validator.sh
