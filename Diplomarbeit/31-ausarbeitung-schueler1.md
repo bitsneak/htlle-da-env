@@ -52,5 +52,4 @@ I sincerely wish for you every possible joy life could bring. Everybody needs a 
 If you don't like it - change it. It's your world. Isn't it great to do something you can't fail at? Play with the angles. See how easy it is to create a little tree right in your world. This piece of canvas is your world. This painting comes right out of your heart.
 
 
-
-
+dfdgd
