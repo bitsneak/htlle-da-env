@@ -1,0 +1,52 @@
+{
+    "name": "htlle-da-builder",
+    //"image": "bytebang/htlle-da-builder:latest",
+    "build": {
+		"dockerfile": "../Diplomarbeit/da-base-template/tools/docker/Dockerfile"
+	},
+    
+    // Iinstall workspace extensions inside container
+    "customizations": {
+        // General settings
+        "settings": {
+            "terminal.integrated.defaultProfile.linux": "bash"
+        },
+        // Visual Studio Code specific
+        "vscode": {
+            "settings": {
+                "cSpell.words": [
+                    "AHWIN",
+                    "BHWIN",
+                    "colour",
+                    "colours"
+                ],
+                "cSpell.language": "en,de-de",
+                "todohighlight.keywords": [
+                    "\\todo"
+                ],
+                "PandocCiter.RootFile": "metadata.yaml"
+            },
+            "extensions": [
+                "sygene.auto-correct",
+                "streetsidesoftware.code-spell-checker",
+                "streetsidesoftware.code-spell-checker-german",
+                "mhutchie.git-graph",
+                "waderyan.gitblame",
+                "shaharkazaz.git-merger",
+                "codezombiech.gitignore",
+                "yzhang.markdown-all-in-one",
+                "notzaki.pandocciter",
+                "tomoki1207.pdf",
+                "wayou.vscode-todo-highlight",
+                "ms-vscode-remote.remote-containers"
+            ]
+        }
+    },
+
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+        "source=${localEnv:USERPROFILE}\\.gitconfig,target=/home/builder/.gitconfig,type=bind,readonly"
+    ],
+    "workspaceFolder": "/workspace/Diplomarbeit",
+    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
+}

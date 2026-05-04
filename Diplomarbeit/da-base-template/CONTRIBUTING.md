@@ -15,7 +15,7 @@ Thank you for your interest in contributing to **da-base-template**! We apprecia
 
 ### Issues
 
-- Before opening a new issue, please check if it already exists in the [issue tracker](https://github.com/bitsneak/HTLLE-DA-Vorlage/issues).
+- Before opening a new issue, please check if it already exists in the [issue tracker](https://github.com/HTL-Leoben/da-base-template/issues).
 - Provide as much detail as possible and use the issue templates.
 
 ### Pull Requests
@@ -48,7 +48,7 @@ If possible [reference the issue](https://docs.github.com/en/get-started/writing
 Commit messages from certain types automatically trigger new releases when pushed to the main branch.
 
 - Patch → `fix[optional scope]: <description>`
-- Minor → `feat[optional scope]: <description>`
+- Minor → `feat[optional scope]: <description>` and `perf[optional scope]: <description>`
 - Major → `<type>[optional scope]!: <description>`
 - Major → `BREAKING CHANGE: <description>` in footer
 
@@ -65,3 +65,5 @@ Commit messages from certain types automatically trigger new releases when pushe
 ---
 
 Thank you for your contributions!
+
+**Author:** [Marko Schrempf](https://github.com/bitsneak)

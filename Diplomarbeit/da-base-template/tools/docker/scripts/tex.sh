@@ -3,10 +3,10 @@
 set -euo pipefail
 
 TARGETS="tex"
-# Use cmd arg or the env TEMPLATE_NAME to change the templates folder name. Default: da-base-template
-TEMPLATE_NAME="${1:-${TEMPLATE_NAME:-da-base-template}}"
+# Use cmd arg or the env TEMPLATE to change the templates folder name. Default: da-base-template
+TEMPLATE="${1:-${TEMPLATE_NAME:-da-base-template}}"
 
 export TARGETS
-export TEMPLATE_NAME
+export TEMPLATE
 
 /scripts/validator.sh

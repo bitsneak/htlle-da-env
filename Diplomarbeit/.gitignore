@@ -1,4 +1,5 @@
 /*.pdf
 /*.tex
 /*.log
+*.DS_Store
 /spellcheck-results.txt

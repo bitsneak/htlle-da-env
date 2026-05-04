@@ -2,13 +2,13 @@
 # Author: Marko Schrempf
 set -euo pipefail
 
-# Use env TARGETS (or deprecated TARGET) to determine one or multiple make targets. Defaults to pdf
-TARGETS="${TARGETS:-${TARGET:-pdf}}"
-# Use env TEMPLATE_NAME to change the template folder name
-TEMPLATE_NAME="${TEMPLATE_NAME:-da-base-template}"
+# Use env TARGETS to determine one or multiple make targets. Default: pdf
+TARGETS="${TARGETS:-pdf}"
+# Use env TEMPLATE to change the template folder name. Default: da-base-template
+TEMPLATE="${TEMPLATE:-da-base-template}"
 
 export TARGETS
-export TEMPLATE_NAME
+export TEMPLATE
 
 if [ "$#" -gt 0 ]; then
     /scripts/command_wrapper.sh "$@"

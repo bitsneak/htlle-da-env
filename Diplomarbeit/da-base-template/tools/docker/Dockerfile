@@ -9,7 +9,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN apt-get update && apt-get install -y --no-install-recommends \
         # Utilities
         git \
-        openssh-client \
         make \
         rsync \
         tree \
@@ -47,9 +46,9 @@ COPY scripts/bash_completion.sh /scripts/bash_completion.sh
 
 # Create execution commands
 RUN ln -s /scripts/pdf.sh /usr/local/bin/pdf && \
+    ln -s /scripts/spellcheck.sh /usr/local/bin/spellcheck && \
     ln -s /scripts/tex.sh /usr/local/bin/tex && \
     ln -s /scripts/clean.sh /usr/local/bin/clean && \
-    ln -s /scripts/spellcheck.sh /usr/local/bin/spellcheck && \
     ln -s /scripts/command_wrapper.sh /usr/local/bin/build && \
     ln -s /scripts/bash_completion.sh /etc/bash_completion.d/build
 

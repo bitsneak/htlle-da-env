@@ -2,11 +2,11 @@
 # Author: Marko Schrempf
 set -euo pipefail
 
-# Priority: command line args > env vars > defaults
+# Priority: cli args > env vars > defaults
 # Determine one or multiple make targets
-TARGETS_VALUE="${TARGETS:-${TARGET:-pdf}}"
+TARGETS_VALUE="${TARGETS:-pdf}"
 # Determine template name
-TEMPLATE_VALUE="${TEMPLATE_NAME:-da-base-template}"
+TEMPLATE_VALUE="${TEMPLATE:-da-base-template}"
 CLI_TARGET_SEEN=0
 CLI_TEMPLATE_SEEN=0
 
@@ -44,9 +44,9 @@ for arg in "$@"; do
 done
 
 TARGETS="$TARGETS_VALUE"
-TEMPLATE_NAME="$TEMPLATE_VALUE"
+TEMPLATE="$TEMPLATE_VALUE"
 # Use the env SOURCE_DIR to change the directory in the container where the files to build lie
-# Same as mounted directory and workdir in dockerfile
+# Same as mounted directory and workdir in Dockerfile
 SOURCE_DIR="/workspace"
 # Possible make targets
 ALLOWED_TARGETS=("pdf" "spellcheck" "tex" "clean")
@@ -59,7 +59,7 @@ if [ -z "$(ls -A "doc" 2>/dev/null)" ] || [ -z "$(ls -A "img" 2>/dev/null)" ] ||
 fi
 
 # Check if the template directory exists and has all the necessary files
-if [ ! -d "$TEMPLATE_NAME" ] || [ ! -f "$TEMPLATE_NAME/Makefile" ] || [ -z "$(ls -A "$TEMPLATE_NAME/style" 2>/dev/null)" ]; then
+if [ ! -d "$TEMPLATE" ] || [ ! -f "$TEMPLATE/Makefile" ] || [ -z "$(ls -A "$TEMPLATE/style" 2>/dev/null)" ]; then
     echo "Template is missing/incomplete"
     echo "Please ensure the template is correctly set up"
     exit 1
@@ -93,5 +93,5 @@ done
 # Execute targets only after all of them are validated
 for raw_target in "${REQUESTED_TARGETS[@]}"; do
     target="$(echo "$raw_target" | xargs)"
-    make -C "$TEMPLATE_NAME" "$target" SOURCEDIR="$SOURCE_DIR"
+    make -C "$TEMPLATE" "$target" SOURCEDIR="$SOURCE_DIR"
 done

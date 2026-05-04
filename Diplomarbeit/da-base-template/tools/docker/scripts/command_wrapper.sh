@@ -2,8 +2,8 @@
 # Author: Marko Schrempf
 set -euo pipefail
 
-TARGETS_VALUE="${TARGETS:-${TARGET:-pdf}}"
-TEMPLATE_VALUE="${TEMPLATE_NAME:-da-base-template}"
+TARGETS_VALUE="${TARGETS:-pdf}"
+TEMPLATE_VALUE="${TEMPLATE:-da-base-template}"
 CLI_TARGET_SEEN=0
 CLI_TEMPLATE_SEEN=0
 
@@ -32,7 +32,7 @@ for arg in "$@"; do
                 CLI_TEMPLATE_SEEN=1
             else
                 echo "Unknown argument: $arg"
-                echo "Usage: build [pdf|spellcheck|tex|clean|target1,target2] [template-name]"
+                echo "Usage: build [pdf|spellcheck|tex|clean] [template-name]"
                 echo "   or: build [--targets=pdf,spellcheck] [--template=template-name]"
                 exit 1
             fi
@@ -41,6 +41,6 @@ for arg in "$@"; do
 done
 
 export TARGETS="$TARGETS_VALUE"
-export TEMPLATE_NAME="$TEMPLATE_VALUE"
+export TEMPLATE="$TEMPLATE_VALUE"
 
 /scripts/validator.sh
