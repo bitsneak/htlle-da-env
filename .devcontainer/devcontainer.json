@@ -24,7 +24,8 @@
                 "todohighlight.keywords": [
                     "\\todo"
                 ],
-                "PandocCiter.RootFile": "metadata.yaml"
+                "PandocCiter.RootFile": "metadata.yaml",
+                "editor.tabCompletion": "on"
             },
             "extensions": [
                 "sygene.auto-correct",
