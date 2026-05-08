@@ -8,11 +8,12 @@
         "SOURCE_DIR": "/workspace/Diplomarbeit"
     },
     "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.vscode,target=/workspace/Diplomarbeit/.vscode,type=bind,readonly,consistency=cached"
     ],
     "workspaceFolder": "/workspace/Diplomarbeit",
     "onCreateCommand": {
-        "git-setup": "git config --global --add safe.directory /workspace/Diplomarbeit/da-base-template && git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
+        "git-setup": "git config --global --add safe.directory \"*\" && git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
     },
     "customizations": {
         // Visual Studio Code
