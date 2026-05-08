@@ -4,16 +4,21 @@
     /*"build": {
 		"dockerfile": "../Diplomarbeit/da-base-template/tools/docker/Dockerfile"
 	},*/
-    
-    // Iinstall workspace extensions inside container
+    "containerEnv": {
+        "SOURCE_DIR": "/workspace/Diplomarbeit"
+    },
+    "mounts": [
+        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+    ],
+    "workspaceFolder": "/workspace/Diplomarbeit",
+    "onCreateCommand": {
+        "git-setup": "git config --global --add safe.directory /workspace/Diplomarbeit/da-base-template && git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
+    },
     "customizations": {
-        // General settings
-        "settings": {
-            "terminal.integrated.defaultProfile.linux": "bash"
-        },
-        // Visual Studio Code specific
+        // Visual Studio Code
         "vscode": {
             "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash",
                 "cSpell.words": [
                     "AHWIN",
                     "BHWIN",
@@ -24,7 +29,7 @@
                 "todohighlight.keywords": [
                     "\\todo"
                 ],
-                "PandocCiter.RootFile": "metadata.yaml",
+                "PandocCiter.RootFile": "/workspace/Diplomarbeit/metadata.yaml",
                 "editor.tabCompletion": "on"
             },
             "extensions": [
@@ -42,13 +47,5 @@
                 "ms-vscode-remote.remote-containers"
             ]
         }
-    },
-
-    "mounts": [
-        "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
-        "source=${localEnv:USERPROFILE}\\.gitconfig,target=/home/builder/.gitconfig,type=bind,readonly",
-        //"source=${localEnv:USERPROFILE}\\.ssh,target=/home/builder/.ssh,type=bind,readonly"
-    ],
-    "workspaceFolder": "/workspace/Diplomarbeit",
-    "postStartCommand": "git -C /workspace config --local core.filemode false && git -C /workspace config --local core.autocrlf false && git -C /workspace config --local core.eol lf"
+    }
 }
