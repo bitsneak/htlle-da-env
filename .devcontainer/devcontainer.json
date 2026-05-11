@@ -1,6 +1,6 @@
 {
     "name": "htlle-da-builder",
-    "image": "bitsneak/htlle-da-env:latest",
+    "image": "bitsneak/htlle-da-builder:latest",
     /*"build": {
 		"dockerfile": "../Diplomarbeit/da-base-template/tools/docker/Dockerfile"
 	},*/
