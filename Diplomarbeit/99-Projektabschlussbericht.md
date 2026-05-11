@@ -4,7 +4,7 @@
 ### Erfolgsmessung
 
 #### Erreichung Leistungs-/Qualitätsziele
-Hier beschreibe sie ob Sie das ursprünglich vereinbarte Ziel erreicht haben oder nicht. Falls es zu irgendwelchen Abweichungen gekommen ist dann beschreiben Sie warum das so war und was Sie dagegen unternommen haben.
+Hier beschreibe sie ob Sie das ursprünglich vereinbarte Ziel erreicht haben oder nicht. Falls es zu irgendwelchen Abweichungen gekommen ist dann beschreiben Sie warum das so war und was Sie dagegen unternommen haben.asdasdas
 
 #### Erreichung Terminziele
 Hier dokumentieren Sie ob Sie Ihre gesteckten Termine für die Meilensteine einhalten konnten. Falls es zu verzügen gekommen ist argumentieren sie hier warum das so war.
