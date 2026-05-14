@@ -4,7 +4,7 @@ STYLEDIR=$(CURDIR)/style
 STAGINGDIR=$(CURDIR)/staging
 
 INPUTDIR=$(STAGINGDIR)
-OUTPUTDIR=$(STAGINGDIR)
+OUTPUTDIR=$(SOURCEDIR)/out
 
 BIBFILE=$(INPUTDIR)/literatur.bib
 METADATAFILE = $(INPUTDIR)/metadata.yaml
@@ -70,7 +70,6 @@ compile-output:
 	--template="$(STAGINGDIR)/style/template.tex" \
     --bibliography="$(BIBFILE)" 2>"$(LOGFILE)" \
 	--citeproc \
-	--csl="$(STAGINGDIR)/style/htlle-diplomarbeit.csl" \
 	--highlight-style=pygments \
 	--listings \
 	--metadata link-citations=true \
@@ -80,8 +79,8 @@ compile-output:
 	@cat $(LOGFILE)
 
     # Build erfolgreich -> Resultate zurückkopieren
-	@rsync -az $(LOGFILE) $(SOURCEDIR)/
-	@rsync -az $(OUTPUTFILE) $(SOURCEDIR)/
+	@rsync -az $(LOGFILE) $(OUTPUTDIR)/
+	@rsync -az $(OUTPUTFILE) $(OUTPUTDIR)/
 	
 do-spellcheck:
 	@echo "Performing a spellcheck on all Markdown files"
@@ -96,22 +95,25 @@ do-spellcheck:
 	@echo '------------------->8-------------------------'
 
     # Spell resultate zurueckkopieren
-	@rsync -az $(SPELLERRORFILE) $(SOURCEDIR)/
+	@rsync -az $(SPELLERRORFILE) $(OUTPUTDIR)/
 
 remove-stage:
     #Remove the staging directory
 	@echo "Removing the staging directory"
 	@rm -rf $(STAGINGDIR)
 
+prepare-output-dir:
+	@mkdir -p "$(OUTPUTDIR)"
+
 # Targets which are intended to be used directly
-spellcheck: build-stage do-spellcheck remove-stage
+spellcheck: prepare-output-dir build-stage do-spellcheck remove-stage
 
 # Erzeugen einer PDF Datei
-pdf: build-stage compile-output remove-stage
+pdf: prepare-output-dir build-stage compile-output remove-stage
 
 # Ziel für die Erzeugung einer .tex Datei
 tex: OUTPUTFILE := $(OUTPUTFILE).tex
-tex: build-stage compile-output remove-stage
+tex: prepare-output-dir build-stage compile-output remove-stage
  
 clean: 
     # Remove the staging directory

@@ -8,9 +8,8 @@ _build_completion() {
     prev="${COMP_WORDS[COMP_CWORD-1]}"
 
     local targets="pdf spellcheck tex clean"
-    local flags="--targets= --template= --source-dir="
+    local flags="--targets= --template= --source-dir= --output-dir="
 
-    # Completion for --targets=
     if [[ "$cur" == --targets=* ]]; then
         local value="${cur#--targets=}"
         local prefix=""
@@ -33,8 +32,7 @@ _build_completion() {
         return 0
     fi
 
-    # Ensuring no completion for --template= or --source-dir=
-    if [[ "$prev" == "--template=" || "$prev" == "--source-dir=" ]]; then
+    if [[ "$prev" == "--template=" || "$prev" == "--source-dir=" || "$prev" == "--output-dir=" ]]; then
         COMPREPLY=()
         return 0
     fi
