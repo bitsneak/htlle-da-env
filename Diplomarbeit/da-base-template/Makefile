@@ -6,8 +6,8 @@ STAGINGDIR=$(CURDIR)/staging
 INPUTDIR=$(STAGINGDIR)
 OUTPUTDIR=$(SOURCEDIR)/out
 
-BIBFILE=$(INPUTDIR)/literatur.bib
-METADATAFILE = $(INPUTDIR)/metadata.yaml
+BIBFILE = literatur.bib
+METADATAFILE = metadata.yaml
 OUTPUTFILE = $(OUTPUTDIR)/diplomarbeit.pdf
 LOGFILE = $(OUTPUTFILE).log
 SPELLERRORFILE = $(OUTPUTDIR)/spellcheck-results.txt
@@ -65,10 +65,11 @@ compile-output:
 
     # Builden mit pandoc. Als Basisverzeichnis springen wir ins staging. 
     # Damit sollten alle relativen Links stimmen
-	-@cd staging && pandoc "$(STAGINGDIR)"/*.md "$(STAGINGDIR)/style/"*.md *.yaml \
+	-@cd "$(STAGINGDIR)" && pandoc *.md style/*.md *.yaml \
 	-o "$(OUTPUTFILE)" \
-	--template="$(STAGINGDIR)/style/template.tex" \
+	--template="style/template.tex" \
     --bibliography="$(BIBFILE)" 2>"$(LOGFILE)" \
+	--csl="style/htlle-diplomarbeit.csl" \
 	--citeproc \
 	--highlight-style=pygments \
 	--listings \
@@ -102,18 +103,19 @@ remove-stage:
 	@echo "Removing the staging directory"
 	@rm -rf $(STAGINGDIR)
 
-prepare-output-dir:
+prepare-dirs:
+	@mkdir -p "$(STAGINGDIR)"
 	@mkdir -p "$(OUTPUTDIR)"
 
 # Targets which are intended to be used directly
-spellcheck: prepare-output-dir build-stage do-spellcheck remove-stage
+spellcheck: prepare-dirs build-stage do-spellcheck remove-stage
 
 # Erzeugen einer PDF Datei
-pdf: prepare-output-dir build-stage compile-output remove-stage
+pdf: prepare-dirs build-stage compile-output remove-stage
 
 # Ziel für die Erzeugung einer .tex Datei
 tex: OUTPUTFILE := $(OUTPUTFILE).tex
-tex: prepare-output-dir build-stage compile-output remove-stage
+tex: prepare-dirs build-stage compile-output remove-stage
  
 clean: 
     # Remove the staging directory
