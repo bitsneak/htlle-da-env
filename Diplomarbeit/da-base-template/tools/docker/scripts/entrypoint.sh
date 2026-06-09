@@ -8,13 +8,12 @@ TARGETS="${TARGETS:-pdf}"
 TEMPLATE="${TEMPLATE:-da-base-template}"
 # Use env SOURCE_DIR to change the source folder name. Default: /workspace
 SOURCE_DIR="${SOURCE_DIR:-/workspace}"
-# Use cmd arg or the env OUTPUT_DIR to change the output folder name. Default: Default: SOURCE_DIR/out
+# Use cmd arg or the env OUTPUT_DIR to change the output folder name. Default: SOURCE_DIR/out
 OUTPUT_DIR="${OUTPUT_DIR:-$SOURCE_DIR/out}"
+# Use cmd arg or the env STAGING_DIR to change the staging folder name. Default: staging
+STAGING_DIR="${STAGING_DIR:-staging}"
 
-export TARGETS
-export TEMPLATE
-export SOURCE_DIR
-export OUTPUT_DIR
+export TARGETS TEMPLATE SOURCE_DIR OUTPUT_DIR STAGING_DIR
 
 if [ "$#" -gt 0 ]; then
     /scripts/command_wrapper.sh "$@"

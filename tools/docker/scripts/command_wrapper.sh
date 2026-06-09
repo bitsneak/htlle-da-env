@@ -19,23 +19,23 @@ for arg in "$@"; do
             TARGETS_VALUE="${arg#--targets=}"
             CLI_TARGET_SEEN=1
             ;;
-        --template=*)
-            TEMPLATE_VALUE="${arg#--template=}"
+        --tmpl=*)
+            TEMPLATE_VALUE="${arg#--tmpl=}"
             CLI_TEMPLATE_SEEN=1
             ;;
-        --source-dir=*)
-            SOURCE_DIR_VALUE="${arg#--source-dir=}"
+        --src-dir=*)
+            SOURCE_DIR_VALUE="${arg#--src-dir=}"
             CLI_SOURCE_DIR_SEEN=1
             ;;
-        --output-dir=*)
-            OUTPUT_DIR_VALUE="${arg#--output-dir=}"
+        --out-dir=*)
+            OUTPUT_DIR_VALUE="${arg#--out-dir=}"
             CLI_OUTPUT_DIR_SEEN=1
             ;;
-        --staging-dir=*)
-            STAGING_DIR_VALUE="${arg#--staging-dir=}"
+        --stage-dir=*)
+            STAGING_DIR_VALUE="${arg#--stage-dir=}"
             CLI_STAGING_DIR_SEEN=1
             ;;
-        pdf|spellcheck|tex|clean)
+        pdf|spellcheck|tex|clean-stage|clean-out|clean-all)
             TARGETS_VALUE="$arg"
             CLI_TARGET_SEEN=1
             ;;
@@ -59,8 +59,9 @@ for arg in "$@"; do
                 CLI_STAGING_DIR_SEEN=1
             else
                 echo "Unknown argument: $arg"
-                echo "Usage: build [pdf|spellcheck|tex|clean] [template] [source] [output] [staging]"
-                echo "   or: build [--targets=pdf,spellcheck,tex,clean] [--template=template] [--source-dir=source] [--output-dir=output] [--staging-dir=staging]"
+                echo "Usage: build [targets] [tmpl] [src-dir] [out-dir] [stage-dir]"
+                echo "   or: build [--targets=targets] [--tmpl=template] [--src-dir=source] [--out-dir=output] [--stage-dir=staging]"
+                echo "Targets: pdf,spellcheck,tex,clean-stage,clean-out,clean-all"
                 exit 1
             fi
             ;;

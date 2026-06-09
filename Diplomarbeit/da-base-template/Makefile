@@ -117,9 +117,13 @@ pdf: prepare-dirs build-stage compile-output remove-stage
 tex: OUTPUTFILE := $(OUTPUTFILE).tex
 tex: prepare-dirs build-stage compile-output remove-stage
  
-clean: 
+clean-stage: 
     # Remove the staging directory
 	@rm -rf $(STAGINGDIR)
+clean-out: 
+    # Remove the output directory
+	@rm -rf $(OUTPUTDIR)
+clean-all: clean-stage clean-out
 
 # Special Targets
-.PHONY: help pdf clean
+.PHONY: help pdf spellcheck tex clean-stage clean-out clean-all

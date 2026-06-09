@@ -1,6 +1,6 @@
-/*.pdf
-/*.tex
-/*.log
+*.log
 *.DS_Store
-/spellcheck-results.txt
+*diplomarbeit.pdf
+*spellcheck-results.txt
+*diplomarbeit.pdf.tex
 .vscode

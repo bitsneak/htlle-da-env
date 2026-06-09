@@ -39,7 +39,7 @@ The script supports different flags to search and filter where `-u` and `-i` are
 | `-b` | Specify branch which to analyze. |
 | `-e` | Export results as JSON to stdout. |
 | `-ef` | Export results as JSON to a file. If a directory or filename is provided the file is saved there. |
-| `-p` | Specify the path to a git repository |
+| `-p` | Specify the path to a git repository. |
 | `-h` | Show help message. |
 
 | Flag | Options | Default |

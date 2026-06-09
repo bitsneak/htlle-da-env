@@ -14,7 +14,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-$SOURCE_DIR/out}"
 # Use the env STAGING_DIR to change the directory in the container where the staging files lie: Default: staging
 STAGING_DIR="${STAGING_DIR:-staging}"
 # Possible make targets
-ALLOWED_TARGETS=("pdf" "spellcheck" "tex" "clean")
+ALLOWED_TARGETS=("pdf" "spellcheck" "tex" "clean-stage" "clean-out" "clean-all")
 ALLOWED_TARGETS_STRING=$(IFS=', '; echo "${ALLOWED_TARGETS[*]}")
 
 # Check if SOURCE_DIR has the necessary files and folders

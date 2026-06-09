@@ -42,7 +42,9 @@ COPY scripts/entrypoint.sh /entrypoint.sh
 COPY scripts/pdf.sh /scripts/pdf.sh
 COPY scripts/spellcheck.sh /scripts/spellcheck.sh
 COPY scripts/tex.sh /scripts/tex.sh
-COPY scripts/clean.sh /scripts/clean.sh
+COPY scripts/clean-stage.sh /scripts/clean-stage.sh
+COPY scripts/clean-out.sh /scripts/clean-out.sh
+COPY scripts/clean-all.sh /scripts/clean-all.sh
 COPY scripts/command_wrapper.sh /scripts/command_wrapper.sh
 COPY scripts/bash_completion.sh /scripts/bash_completion.sh
 
@@ -50,7 +52,9 @@ COPY scripts/bash_completion.sh /scripts/bash_completion.sh
 RUN ln -s /scripts/pdf.sh /usr/local/bin/pdf && \
     ln -s /scripts/spellcheck.sh /usr/local/bin/spellcheck && \
     ln -s /scripts/tex.sh /usr/local/bin/tex && \
-    ln -s /scripts/clean.sh /usr/local/bin/clean && \
+    ln -s /scripts/clean-stage.sh /usr/local/bin/clean-stage && \
+    ln -s /scripts/clean-out.sh /usr/local/bin/clean-out && \
+    ln -s /scripts/clean-all.sh /usr/local/bin/clean-all && \
     ln -s /scripts/command_wrapper.sh /usr/local/bin/build && \
     ln -s /scripts/bash_completion.sh /etc/bash_completion.d/build
 
