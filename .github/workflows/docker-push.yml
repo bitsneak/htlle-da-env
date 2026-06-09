@@ -6,11 +6,6 @@ on:
 #    workflows: ["Build Docker Image"] 
 #    types:
 #      - completed
-  push:
-    branches:
-      - main
-    paths:
-      - tools/docker
   workflow_dispatch:
 
 jobs:
