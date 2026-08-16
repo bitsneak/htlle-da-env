@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Build And Send Diploma Thesis
-        uses: HTL-Leoben/da-base-template@main
+        uses: HTL-Leoben/da-base-template@refactor/action
         # Uncomment following lines to enable email notification
         with:
           dockerhub-username: bitsneak
