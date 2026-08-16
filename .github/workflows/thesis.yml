@@ -20,7 +20,7 @@ jobs:
         run: ls -la ${{ github.workspace }}
     
       - name: Build And Send Diploma Thesis
-        uses: HTL-Leoben/da-base-template@refactor/action
+        uses: bitsneak/htlle-da-vorlage@main
         # Uncomment following lines to enable email notification
         with:
           dockerhub-username: bitsneak
