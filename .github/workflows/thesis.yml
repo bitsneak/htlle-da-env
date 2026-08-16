@@ -13,6 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Temp
+        run: ls -la /home/runner/work/DA-Template-Testing/DA-Template-Testing/Diplomarbeit
+        
+    
       - name: Build And Send Diploma Thesis
         uses: HTL-Leoben/da-base-template@refactor/action
         # Uncomment following lines to enable email notification
