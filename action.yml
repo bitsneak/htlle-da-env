@@ -29,13 +29,25 @@ inputs:
     description: The path from the repository root to the filled out diploma thesis folder. If not set it will default to 'Diplomarbeit'
     default: Diplomarbeit
     required: false
-  dockerhub-username:
-    description: The DockerHub username for the image. If not set it will default to 'bytebang'
+  output-dir:
+    description: The name of the compilation output folder placed inside the thesis-path folder. If not set it will default to 'out'
+    default: out
+    required: false
+  docker-registry:
+    description: The Docker registry from which to pull the image. If not set it will default to 'docker.io'
+    default: docker.io
+    required: false
+  docker-namespace:
+    description: The Docker username for the image. If not set it will default to 'bytebang'
     default: bytebang
     required: false
-  dockerhub-repository:
-    description: The DockerHub repository name for the image. If not set it will default to 'htlle-da-builder'
+  docker-image:
+    description: The Docker repository name for the image. If not set it will default to 'htlle-da-builder'
     default: htlle-da-builder
+    required: false
+  docker-tag:
+    description: The Docker tag used for the image. If not set it will default to 'latest' 
+    default: latest
     required: false
   manual-mode:
     description: If the repository should not be checked out automatically specify the complete workspace path to the thesis-path. If not set it will default to checking out the latest repository state
@@ -59,8 +71,8 @@ runs:
       uses: actions/cache@v4
       with:
         path: /tmp/.docker
-        key: docker-${{ inputs.dockerhub-username }}-${{ inputs.dockerhub-repository }}-${{ hashFiles('**/da-base-template/tools/docker/Dockerfile') }}
-        restore-keys: docker-${{ inputs.dockerhub-username }}-${{ inputs.dockerhub-repository }}
+        key: docker-${{ inputs.docker-namespace }}-${{ inputs.docker-image }}-${{ hashFiles('**/da-base-template/tools/docker/Dockerfile') }}
+        restore-keys: docker-${{ inputs.docker-namespace }}-${{ inputs.docker-image }}
 
     - name: Create Docker Cache Directory
       if: steps.cache-docker.outputs.cache-hit != 'true'
@@ -76,8 +88,8 @@ runs:
       if: steps.cache-docker.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        docker pull ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }}
-        docker save ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }} -o /tmp/.docker/image.tar
+        docker pull ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
+        docker save ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }} -o /tmp/.docker/image.tar
 
     - name: Build Diploma Thesis
       shell: bash
@@ -85,7 +97,7 @@ runs:
         docker run --rm \
           -u $(id -u):$(id -g) \
           -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace" \
-          ${{ inputs.dockerhub-username }}/${{ inputs.dockerhub-repository }}
+          ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
 
     - name: Get UTC Timestamp
       id: timestamp
@@ -94,13 +106,13 @@ runs:
 
     - name: Rename PDF With Timestamp
       shell: bash
-      run: mv ${{ inputs.thesis-path }}/diplomarbeit.pdf ${{ inputs.thesis-path }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
+      run: mv ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit.pdf ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
 
     - name: Upload Diploma Thesis
       uses: actions/upload-artifact@v4
       with:
         name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
-        path: ${{ inputs.thesis-path }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
+        path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
 
     - name: Extract Commit Message
       if: ${{ inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' && inputs.mail-body == '' }}
@@ -120,4 +132,4 @@ runs:
         from: ${{ inputs.mail }}
         subject: "Diplomarbeit"
         body: ${{ inputs.mail-body || steps.message.outputs.commit_message }}
-        attachments: ${{ inputs.thesis-path }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
+        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
