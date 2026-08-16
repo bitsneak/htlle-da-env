@@ -14,8 +14,7 @@ jobs:
 
     steps:
       - name: Temp
-        run: ls -la /home/runner/work/DA-Template-Testing/Diplomarbeit
-        
+        run: ls -la ${{ github.workspace }}
     
       - name: Build And Send Diploma Thesis
         uses: HTL-Leoben/da-base-template@refactor/action
