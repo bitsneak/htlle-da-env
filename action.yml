@@ -106,10 +106,10 @@ runs:
     - name: Build Diploma Thesis
       shell: bash
       run: docker run --rm \
-          -u $(id -u):$(id -g) \
-          -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace:rw" \
-          -e TARGETS=${{ inputs.target }} \
-          ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
+            -u $(id -u):$(id -g) \
+            -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace:rw" \
+            -e TARGETS=${{ inputs.target }} \
+            ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
 
     - name: Get UTC Timestamp
       id: timestamp
