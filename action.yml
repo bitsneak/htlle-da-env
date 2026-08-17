@@ -116,37 +116,16 @@ runs:
       shell: bash
       run: echo "datetime=$(date -u +'%Y-%m-%dT%H-%MZ')" >> $GITHUB_OUTPUT
 
-    #- name: Rename PDF With Timestamp
-      #if: ${{ inputs.target == 'pdf' }}
-      #shell: bash
-      #run: mv ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit.pdf ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
-
-    #- name: Rename Spellcheck With Timestamp
-      #if: ${{ inputs.target == 'spellcheck' }}
-      #shell: bash
-      #run: mv ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/spellcheck-results.txt ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/spellcheck-results-${{ steps.timestamp.outputs.datetime }}.
-      
-    #- name: Rename LaTeX With Timestamp
-      #if: ${{ inputs.target == 'tex' }}
-      #shell: bash
-      #run: mv ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit.pdf.tex ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf.tex
-
-    #- name: Upload Diploma Thesis
-      #uses: actions/upload-artifact@v7
-      #with:
-        #name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
-        #path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
+    - name: Compress Output Directory
+      shell: bash
+      run: cd ${{ inputs.thesis-path }}/${{ inputs.output-dir }}
+        zip -r diplomarbeit-${{ steps.timestamp.outputs.datetime }}.zip .
 
     - name: Upload Diploma Thesis Artifact
       uses: actions/upload-artifact@v7
       with:
         name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
         path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.zip
-
-    - name: Zip Output Directory
-      shell: bash
-      run: cd ${{ inputs.thesis-path }}/${{ inputs.output-dir }}
-        zip -r diplomarbeit-${{ steps.timestamp.outputs.datetime }}.zip .
 
     - name: Extract Commit Message
       if: ${{ inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' && inputs.mail-body == '' }}
