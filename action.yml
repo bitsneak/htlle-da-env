@@ -132,7 +132,7 @@ runs:
       id: check-mail
       shell: bash
       run: |
-        ALLOWED_TARGETS=$(echo "${{ inputs.send-mail-on-targets }}" | xargs | tr '[:upper:]' '[:lower:]')
+        ALLOWED_TARGETS=$(echo "${{ inputs.send-mail-on-target }}" | xargs | tr '[:upper:]' '[:lower:]')
         CURRENT_TARGET=$(echo "${{ inputs.target }}" | tr '[:upper:]' '[:lower:]')
         echo "should_send=false" >> $GITHUB_OUTPUT
         
