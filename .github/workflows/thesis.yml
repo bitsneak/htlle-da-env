@@ -23,8 +23,8 @@ jobs:
           docker-namespace: bitsneak
           docker-image: htlle-da-env
           target: ${{ matrix.target }}
-          #mail: ${{ secrets.SENDING_MAIL }}
-          #mail-password: ${{ secrets.SENDING_MAIL_PASSWORD }}
-          #smtp-server: ${{ secrets.SMTP_SERVER }}
-          #smtp-port: ${{ secrets.SMTP_PORT }}
-          #receiving-mail: ${{ secrets.RECEIVING_MAIL }}
+          mail: ${{ secrets.SENDING_MAIL }}
+          mail-password: ${{ secrets.SENDING_MAIL_PASSWORD }}
+          smtp-server: ${{ secrets.SMTP_SERVER }}
+          smtp-port: ${{ secrets.SMTP_PORT }}
+          receiving-mails: ${{ secrets.RECEIVING_MAILS }}
