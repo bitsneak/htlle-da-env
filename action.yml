@@ -159,4 +159,7 @@ runs:
         from: ${{ inputs.mail }}
         subject: "Diplomarbeit"
         body: ${{ inputs.mail-body || steps.message.outputs.commit_message }}
-        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*
+        attachments: |
+          ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*.pdf,
+          ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*.tex,
+          ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*.txt
