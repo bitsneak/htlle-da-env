@@ -6,6 +6,10 @@ branding:
   color: orange
 
 inputs:
+  target:
+    description: The target used to build the diploma thesis. It supports one target per run which is one out of 'pdf', 'spellcheck' or 'tex'. If not set it will default to 'pdf'
+    default: pdf
+    required: false
   mail:
     description: The sending email address
     required: false
@@ -57,9 +61,18 @@ runs:
   using: composite
 
   steps:
+    - name: Check Targets
+      shell: bash
+      run: |
+        TARGET=$(echo "${{ inputs.target }}" | xargs | tr '[:upper:]' '[:lower:]')
+        if [[ "$TARGET" != "pdf" && "$TARGET" != "spellcheck" && "$TARGET" != "tex" ]]; then
+          echo "::error::Invalid target: $TARGET. Allowed targets are pdf, spellcheck, tex."
+          exit 1
+        fi
+
     - name: Checkout Repository
       if: ${{ !inputs.manual-mode }}
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Set thesis-path From manual-mode
       if: ${{ inputs.manual-mode }}
@@ -68,7 +81,7 @@ runs:
 
     - name: Cache Docker Image
       id: cache-docker
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: /tmp/.docker
         key: docker-${{ inputs.docker-namespace }}-${{ inputs.docker-image }}-${{ hashFiles('**/da-base-template/tools/docker/Dockerfile') }}
@@ -96,7 +109,8 @@ runs:
       run: |
         docker run --rm \
           -u $(id -u):$(id -g) \
-          -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace" \
+          -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace:rw" \
+          -e TARGETS=${{ inputs.target }} \
           ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
 
     - name: Get UTC Timestamp
@@ -109,7 +123,7 @@ runs:
       run: mv ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit.pdf ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
 
     - name: Upload Diploma Thesis
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
         path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.pdf
