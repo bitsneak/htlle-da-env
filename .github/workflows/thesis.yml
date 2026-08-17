@@ -13,19 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      
-      - name: Temp
-        run: ls -la ${{ github.workspace }}
-    
       - name: Build And Send Diploma Thesis
         uses: bitsneak/DA-Template-Testing@main
         # Uncomment following lines to enable email notification
         with:
           docker-namespace: bitsneak
           docker-image: htlle-da-env
-          target: pdf
+          target: pdfs
           #mail: ${{ secrets.SENDING_MAIL }}
           #mail-password: ${{ secrets.SENDING_MAIL_PASSWORD }}
           #smtp-server: ${{ secrets.SMTP_SERVER }}
