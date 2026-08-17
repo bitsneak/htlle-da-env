@@ -141,13 +141,13 @@ runs:
         fi
 
     - name: Extract Commit Message
-      if: ${{ inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' && inputs.mail-body == '' }}
+      if: ${{ steps.check-mail.outputs.should_send == 'true' && inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mails != '' && inputs.mail-body == '' }}
       id: message
       shell: bash
       run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
     - name: Send Diploma Thesis
-      if: ${{ steps.check-mail.outputs.should_send == 'true' && inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' }}
+      if: ${{ steps.check-mail.outputs.should_send == 'true' && inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mails != '' }}
       uses: dawidd6/action-send-mail@v18
       with:
         username: ${{ inputs.mail }}
@@ -158,4 +158,5 @@ runs:
         from: ${{ inputs.mail }}
         subject: "Diplomarbeit"
         body: ${{ inputs.mail-body || steps.message.outputs.commit_message }}
-        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}.zip
+        #attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}.zip
+        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/
