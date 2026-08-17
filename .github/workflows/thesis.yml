@@ -12,6 +12,7 @@ jobs:
   build-send:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: true
       matrix:
         target: [pdf, spellcheck, tex]
 
