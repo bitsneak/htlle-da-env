@@ -159,4 +159,4 @@ runs:
         subject: "Diplomarbeit"
         body: ${{ inputs.mail-body || steps.message.outputs.commit_message }}
         #attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}.zip
-        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/
+        attachments: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*
