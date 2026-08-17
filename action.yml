@@ -122,17 +122,11 @@ runs:
       shell: bash
       run: echo "datetime=$(date -u +'%Y-%m-%dT%H-%MZ')" >> $GITHUB_OUTPUT
 
-    - name: Compress Output Directory
-      shell: bash
-      run: |
-        cd ${{ inputs.thesis-path }}/${{ inputs.output-dir }}
-        zip -q -9 -r diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}.zip .
-
     - name: Upload Diploma Thesis Artifact
       uses: actions/upload-artifact@v7
       with:
-        name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
-        path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}.zip
+        path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/
+        name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}
 
     - name: Check Send Mail
       id: check-mail
