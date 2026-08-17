@@ -115,7 +115,7 @@ runs:
           -u $(id -u):$(id -g) \
           -v "${{ github.workspace }}/${{ inputs.thesis-path }}:/workspace:rw" \
           -e TARGETS=${{ inputs.target }} \
-          -e OUTPUT_DIR="${{ inputs.output-dir }}" \
+          -e OUTPUT_DIR=${{ inputs.output-dir }} \
           ${{ inputs.docker-registry }}/${{ inputs.docker-namespace }}/${{ inputs.docker-image }}:${{ inputs.docker-tag }}
 
     - name: Get UTC Timestamp
