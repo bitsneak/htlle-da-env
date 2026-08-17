@@ -66,7 +66,7 @@ runs:
       run: |
         TARGET=$(echo "${{ inputs.target }}" | xargs | tr '[:upper:]' '[:lower:]')
         if [[ "$TARGET" != "pdf" && "$TARGET" != "spellcheck" && "$TARGET" != "tex" ]]; then
-          echo "::error::Invalid target: $TARGET. Allowed targets are pdf, spellcheck, tex."
+          echo "::error::Invalid target: $TARGET. Allowed targets are pdf, spellcheck or tex."
           exit 1
         fi
 
