@@ -61,7 +61,7 @@ runs:
   using: composite
 
   steps:
-    - name: Check Targets
+    - name: Check Target
       shell: bash
       run: |
         TARGET=$(echo "${{ inputs.target }}" | xargs | tr '[:upper:]' '[:lower:]')
