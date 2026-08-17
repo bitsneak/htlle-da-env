@@ -7,7 +7,11 @@ branding:
 
 inputs:
   target:
-    description: The target used to build the diploma thesis. It supports one target per run which is one out of 'pdf', 'spellcheck' or 'tex'. If not set it will default to 'pdf'
+    description: The target used to build the diploma thesis. It supports one target per run which is one out of 'pdf', 'spellcheck' or 'tex'. Defaults to 'pdf'
+    default: pdf
+    required: false
+  send-mail-on-target:
+    description: Comma-separated list of targets that trigger an email notification. It supports the same targets as in target and 'all'. Defaults to 'pdf'.
     default: pdf
     required: false
   mail:
@@ -30,31 +34,31 @@ inputs:
     required: false
 
   thesis-path:
-    description: The path from the repository root to the filled out diploma thesis folder. If not set it will default to 'Diplomarbeit'
+    description: The path from the repository root to the filled out diploma thesis folder. Defaults to 'Diplomarbeit'
     default: Diplomarbeit
     required: false
   output-dir:
-    description: The name of the compilation output folder placed inside the thesis-path folder. If not set it will default to 'out'
+    description: The name of the compilation output folder placed inside the thesis-path folder. Defaults to 'out'
     default: out
     required: false
   docker-registry:
-    description: The Docker registry from which to pull the image. If not set it will default to 'docker.io'
+    description: The Docker registry from which to pull the image. Defaults to 'docker.io'
     default: docker.io
     required: false
   docker-namespace:
-    description: The Docker username for the image. If not set it will default to 'bytebang'
+    description: The Docker username for the image. Defaults to 'bytebang'
     default: bytebang
     required: false
   docker-image:
-    description: The Docker repository name for the image. If not set it will default to 'htlle-da-builder'
+    description: The Docker repository name for the image. Defaults to 'htlle-da-builder'
     default: htlle-da-builder
     required: false
   docker-tag:
-    description: The Docker tag used for the image. If not set it will default to 'latest' 
+    description: The Docker tag used for the image. Defaults to 'latest' 
     default: latest
     required: false
   manual-mode:
-    description: If the repository should not be checked out automatically specify the complete workspace path to the thesis-path. If not set it will default to checking out the latest repository state
+    description: If the repository should not be checked out automatically specify the complete workspace path to the thesis-path. Defaults to checking out the latest repository state
     required: false
 
 runs:
@@ -130,6 +134,18 @@ runs:
         name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}
         path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/diplomarbeit-${{ steps.timestamp.outputs.datetime }}.zip
 
+    - name: Check Send Mail
+      id: check-mail
+      shell: bash
+      run: |
+        ALLOWED_TARGETS=$(echo "${{ inputs.send-mail-on-targets }}" | xargs | tr '[:upper:]' '[:lower:]')
+        CURRENT_TARGET=$(echo "${{ inputs.target }}" | tr '[:upper:]' '[:lower:]')
+        echo "should_send=false" >> $GITHUB_OUTPUT
+        
+        if [[ "$ALLOWED_TARGETS" == *"all"* ]] || [[ "$ALLOWED_TARGETS" == *"$CURRENT_TARGET"* ]]; then
+          echo "should_send=true" >> $GITHUB_OUTPUT
+        fi
+
     - name: Extract Commit Message
       if: ${{ inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' && inputs.mail-body == '' }}
       id: message
@@ -137,7 +153,7 @@ runs:
       run: echo "commit_message=$(git log -1 --pretty=%B)" >> $GITHUB_OUTPUT
 
     - name: Send Diploma Thesis
-      if: ${{ inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' }}
+      if: ${{ steps.check-mail.outputs.should_send == 'true' && inputs.mail != '' && inputs.mail-password != '' && inputs.smtp-server != '' && inputs.smtp-port != '' && inputs.receiving-mail != '' }}
       uses: dawidd6/action-send-mail@v18
       with:
         username: ${{ inputs.mail }}
