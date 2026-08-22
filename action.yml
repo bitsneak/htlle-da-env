@@ -172,7 +172,7 @@ runs:
         server_port: ${{ inputs.smtp-port }}
         to: ${{ inputs.receiving-mails }}
         from: ${{ inputs.mail }}
-        subject: "Diplomarbeit"
+        subject: "Diploma thesis"
         body: ${{ inputs.mail-body || steps.message.outputs.commit_message }}
         attachments: |
           ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*.pdf,
