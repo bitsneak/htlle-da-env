@@ -137,8 +137,7 @@ runs:
         CURRENT_TARGET=$(echo "${{ inputs.target }}" | xargs | tr '[:upper:]' '[:lower:]')
         echo "send=false" >> $GITHUB_OUTPUT
         
-        if [[ "$ALLOWED_TARGETS" == *"all"* ]] || [[ "$ALLOWED_TARGETS" == *"$CURRENT_TARGET"* ]]; && \
-          [[ "$TARGET_MATCH" == "true" ]] && \
+        if { [[ "$ALLOWED_TARGETS" == *"all"* ]] || [[ "$ALLOWED_TARGETS" == *"$CURRENT_TARGET"* ]]; } && \
           [[ -n "${{ inputs.mail }}" ]] && \
           [[ -n "${{ inputs.mail-password }}" ]] && \
           [[ -n "${{ inputs.smtp-server }}" ]] && \
