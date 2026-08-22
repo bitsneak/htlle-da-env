@@ -127,19 +127,7 @@ runs:
       uses: actions/upload-artifact@v7
       with:
         path: ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/
-        name: diplomarbeit-${{ steps.timestamp.outputs.datetime }}-${{ inputs.target }}
-
-    - name: Check Send Mail
-      id: check-mail
-      shell: bash
-      run: |
-        ALLOWED_TARGETS=$(echo "${{ inputs.send-mail-on-target }}" | xargs | tr '[:upper:]' '[:lower:]')
-        CURRENT_TARGET=$(echo "${{ inputs.target }}" | tr '[:upper:]' '[:lower:]')
-        echo "should_send=false" >> $GITHUB_OUTPUT
-        
-        if [[ "$ALLOWED_TARGETS" == *"all"* ]] || [[ "$ALLOWED_TARGETS" == *"$CURRENT_TARGET"* ]]; then
-          echo "should_send=true" >> $GITHUB_OUTPUT
-        fi
+        name: ${{ inputs.target }}-${{ steps.timestamp.outputs.datetime }}
 
     - name: Check Send Mail
       id: check-mail
@@ -166,7 +154,7 @@ runs:
         for file in ${{ inputs.thesis-path }}/${{ inputs.output-dir }}/*.{pdf,txt,tex}; do
             [ -e "$file" ] || continue
             ext="${file##*.}"
-            mv -- "$file" "${file%.*}-$timestamp.$ext"
+            mv -- "$file" "${file%.*}-${{ steps.timestamp.outputs.datetime }}.$ext"
         done
 
     - name: Extract Commit Message
