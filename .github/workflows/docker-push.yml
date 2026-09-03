@@ -20,11 +20,18 @@ jobs:
       - uses: actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
 
-      - name: Docker Hub Login
-        uses: docker/login-action@v3
+      #- name: Docker Hub Login
+        #uses: docker/login-action@v3
+        #with:
+          #username: ${{ secrets.DOCKERHUB_USERNAME }}
+          #password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: GHCR Login
+        uses: docker/login-action@v4
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set Up QEMU
         uses: docker/setup-qemu-action@v4
@@ -33,7 +40,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Push Docker Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: tools/docker
           platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
@@ -41,3 +48,5 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ steps.get-latest-tag.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/${{ secrets.DOCKERHUB_REPOSITORY }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ secrets.DOCKERHUB_REPOSITORY }}:${{ steps.get-latest-tag.outputs.tag }}
