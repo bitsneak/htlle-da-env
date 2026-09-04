@@ -38,7 +38,8 @@ jobs:
             org.opencontainers.image.description=Environment for building the diploma thesis of the HTL Leoben
             org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.base.name=docker.io/library/debian:bookworm-slim
+            org.opencontainers.image.licenses=LicenseRef-HTL-Leoben-Educational-1.0
+            org.opencontainers.image.base.name=docker.io/library/debian:trixie-slim
             org.opencontainers.image.authors=Marko Schrempf, Günther Hutter
           annotations: |
             org.opencontainers.image.vendor=bitsneak
@@ -46,7 +47,8 @@ jobs:
             org.opencontainers.image.description=Environment for building the diploma thesis of the HTL Leoben
             org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
-            org.opencontainers.image.base.name=docker.io/library/debian:bookworm-slim
+            org.opencontainers.image.licenses=LicenseRef-HTL-Leoben-Educational-1.0
+            org.opencontainers.image.base.name=docker.io/library/debian:trixie-slim
             org.opencontainers.image.authors=Marko Schrempf, Günther Hutter
 
       - name: Docker Hub Login
