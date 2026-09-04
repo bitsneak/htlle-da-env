@@ -1,5 +1,5 @@
 # Authors: Marko Schrempf, Günther Hutter
-FROM docker.io/library/debian:bookworm-slim
+FROM docker.io/library/debian:trixie-slim
 
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
