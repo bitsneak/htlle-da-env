@@ -1,14 +1,6 @@
 # Authors: Marko Schrempf, Günther Hutter
 FROM docker.io/library/debian:bookworm-slim
 
-LABEL org.opencontainers.image.base.name="docker.io/library/debian:bookworm-slim"
-LABEL org.opencontainers.image.vendor="HTL Leoben"
-LABEL org.opencontainers.image.title="htlle-da-builder"
-LABEL org.opencontainers.image.description="Build environment for building the diploma thesis of the HTL Leoben"
-LABEL org.opencontainers.image.url=https://github.com/HTL-Leoben/da-base-template
-LABEL org.opencontainers.image.source=https://github.com/HTL-Leoben/da-base-template
-LABEL org.opencontainers.image.authors="Marko Schrempf, Günther Hutter"
-
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     LANG=C.UTF-8 \
