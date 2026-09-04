@@ -79,4 +79,6 @@ jobs:
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
-          annotations: ${{ steps.metadata.outputs.annotations }}
+          annotations: |
+            index:${{ steps.metadata.outputs.annotations }}
+            manifest:${{ steps.metadata.outputs.annotations }}
