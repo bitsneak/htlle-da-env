@@ -2,10 +2,6 @@
 name: Push Docker Image
 
 on:
-#  workflow_run:
-#    workflows: ["Build Docker Image"] 
-#    types:
-#      - completed
   workflow_dispatch:
 
 permissions:
@@ -14,7 +10,6 @@ permissions:
 
 jobs:
   push:
-    #if: ${{ github.event.workflow_run.conclusion == 'success' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
 
     steps:
@@ -38,16 +33,16 @@ jobs:
             type=raw,value=${{ steps.latest-tag.outputs.tag }}
             type=sha
           labels: |
-            org.opencontainers.image.vendor=HTL Leoben
-            org.opencontainers.image.title=htlle-da-builder
+            org.opencontainers.image.vendor=bitsneak
+            org.opencontainers.image.title=htlle-da-env
             org.opencontainers.image.description=Environment for building the diploma thesis of the HTL Leoben
             org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.base.name=docker.io/library/debian:bookworm-slim
             org.opencontainers.image.authors=Marko Schrempf, Günther Hutter
           annotations: |
-            org.opencontainers.image.vendor=HTL Leoben
-            org.opencontainers.image.title=htlle-da-builder
+            org.opencontainers.image.vendor=bitsneak
+            org.opencontainers.image.title=htlle-da-env
             org.opencontainers.image.description=Environment for building the diploma thesis of the HTL Leoben
             org.opencontainers.image.url=${{ github.server_url }}/${{ github.repository }}
             org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
@@ -77,8 +72,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: tools/docker
-          #platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm/v7,linux/arm64/v8
           push: true
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
